@@ -1,7 +1,8 @@
 <?php
 require __DIR__.'/../vendor/autoload.php';
-
+use Slim\Helper\Set;
 use Pool\Application;
+use Pool\Entity\UserRepository;
 
 function check_or_create_json_dir(Application $app)
 {
@@ -23,12 +24,19 @@ $app = new \Pool\Application(
     ]
 );
 
+// Config
+$app->container->singleton(
+    'app.config',
+    function (Set $container) {
+        return json_decode(file_get_contents(__DIR__.'/../src/config.json'), true);
+    }
+);
+
 // Redis client
 $app->container->singleton(
     'redis.client',
     function (Set $container) {
         $config = $container->get('app.config');
-
         $client = new Predis\Client(sprintf('tcp://%s:%s', $config['redis']['host'], $config['redis']['port']));
         $client->select($config['redis']['db']);
 
