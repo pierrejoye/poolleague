@@ -1,2 +1,2 @@
 # poolleague
-Small app to manage the BKK pool leauge
+Small app to manage the BKK pool league
