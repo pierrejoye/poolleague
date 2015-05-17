@@ -1,0 +1,125 @@
+a {
+    color: #08382D;
+}
+a:hover {
+    color: #185144;
+}
+header {
+    background: #42796C;
+    color: white;
+}
+header a, header a:hover {
+    color: #98C488;
+}
+header h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+header h3 img {
+    height: 96px;
+}
+
+header nav {
+    height: 96px;
+    margin-bottom: 10px;
+}
+
+header nav ul {
+    padding-top: 30px;
+}
+
+h1 .label {
+    font-size: .3em;
+}
+
+img.avatar {
+    width: 100%;
+}
+
+.list-group h3 {
+    margin-top: 0;
+}
+
+.list-group .badge a {
+    color: white;
+}
+
+.no-margin-top {
+    margin-top: 0;
+}
+
+.navbar-btn.pull-right {
+    padding-top: 25px;
+    margin-right: 5px;
+}
+.jumbotron {
+    background: transparent;
+}
+.btn-primary {
+    background-color: #08382D;
+    border-color: transparent;
+}
+.btn-primary:hover {
+    background-color: #185144;
+    border-color: #185144;
+    color: #fff;
+}
+.search-form {
+    margin-top:20px;
+}
+.form-control:focus {
+    border-color:#95CB70;
+}
+.logo:hover {
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    -webkit-animation-name: pulse;
+    animation-name: pulse;
+}
+@-webkit-keyframes pulse {
+    0% {
+        -webkit-transform: scale3d(1, 1, 1);
+        transform: scale3d(1, 1, 1);
+    }
+
+    50% {
+        -webkit-transform: scale3d(1.05, 1.05, 1.05);
+        transform: scale3d(1.05, 1.05, 1.05);
+    }
+
+    100% {
+        -webkit-transform: scale3d(1, 1, 1);
+        transform: scale3d(1, 1, 1);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        -webkit-transform: scale3d(1, 1, 1);
+        transform: scale3d(1, 1, 1);
+    }
+
+    50% {
+        -webkit-transform: scale3d(1.05, 1.05, 1.05);
+        transform: scale3d(1.05, 1.05, 1.05);
+    }
+
+    100% {
+        -webkit-transform: scale3d(1, 1, 1);
+        transform: scale3d(1, 1, 1);
+    }
+}
+
+.linkbutton {
+  text-decoration: none;
+  background-color: #EEEEEE;
+  color: #333333;
+  padding: 2px 6px 2px 6px;
+  border-top: 1px solid #CCCCCC;
+  border-right: 1px solid #333333;
+  border-bottom: 1px solid #333333;
+  border-left: 1px solid #CCCCCC;
+}

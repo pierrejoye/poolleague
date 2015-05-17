@@ -1,0 +1,41 @@
+{% extends "index.html" %}
+
+{% set title = 'BKK Pool League' %}
+
+{% block header %}
+    <div class="jumbotron clearfix">
+        <div class="col-lg-5">
+            <img src="/assets/img/bkkpool_logo.png" class="img-responsive logo"/>
+        </div>
+
+        <div class="col-lg-7">
+            <h2>Bangkok Pool League</h2>
+
+            <p class="lead">
+				Bangkok Pool League ranking and agenda
+            </p>
+
+            <p>
+                {% if not user %}
+                    <a class="btn btn-lg btn-primary" href="/login">Login</a>
+                {% else %}
+                    <a class="btn btn-lg btn-default" href="/profile">Account</a>
+                    <a class="btn btn-lg btn-default" href="/logout">Logout</a>
+                    <a class="btn btn-lg btn-primary" href="/leagueday/">Show league day</a>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+			{% include "partials/agenda.html" %}
+        </div>
+
+        <div class="col-lg-12">
+			   {% include "partials/ranking.html" %}
+        </div>
+    </div>
+ {% endblock %}

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pickle - {{title}}</title>
+
+    <link rel="stylesheet" href="/assets/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/assets/css/font-awesome.css"/>
+    <link rel="stylesheet" href="/assets/css/pool.css"/>
+</head>
+
+<body>
+<header>
+    <div class="container">
+        <div class="row">
+            {% block header %}
+                {% include "partials/header.html" %}
+            {% endblock %}
+        </div>
+    </div>
+</header>
+<section>
+    <div class="container">
+        <div class="row">
+            {% include "partials/flash.html" with { "type": "info" } %}
+            {% include "partials/flash.html" with { "type": "success" } %}
+            {% include "partials/flash.html" with { "type": "warning" } %}
+            {% include "partials/flash.html" with { "type": "error", class: "danger" } %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</section>
+<footer>
+    <div class="container">
+        <div class="row">
+            <p>&copy; Copyright 2015 by <a href="https://bkkpool.com">BKK Pool League</a>.</p>
+        </div>
+    </div>
+</footer>
+
+
+</body>
+</html>
