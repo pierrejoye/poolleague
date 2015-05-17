@@ -18,10 +18,7 @@ class AuthController extends ControllerAbstract
     {
 		$h = bin2hex(openssl_random_pseudo_bytes(16));
 		$_SESSION['h'] = $h;
-        $this->app->render('login.html',
-        [
-        'h' => $h
-        ]);
+        $this->app->render('login.html', [ 'h' => $h ]);
     }
 
 	protected function invalidLogin()
@@ -29,14 +26,13 @@ class AuthController extends ControllerAbstract
 		$this->app->flash('error', 'Invalid password or email');
 		$this->app->redirect('/login');
 	}
+
     /**
      * GET /login.
      */
     public function loginAction()
     {
-		$h = $_SESSION['h'];
-		unset($_SESSION['h']);
-		if ($this->app->request()->post('h') != $h) {
+		if (!hash_equals($this->app->request()->post('h'),  $_SESSION['h'])) {
 			$this->app->redirect('/');
 			return;
 		}
@@ -51,9 +47,7 @@ class AuthController extends ControllerAbstract
 		$userRepository = $this->app->container->get('user.repository');
 		$user = $userRepository->find($email);
 		if (!$user) {
-
 			$this->invalidLogin();
-
 			return;
 		}
 		
