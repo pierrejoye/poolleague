@@ -24,6 +24,11 @@ class AuthController extends ControllerAbstract
         ]);
     }
 
+	protected function invalidLogin()
+	{
+		$this->app->flash('error', 'Invalid password or email');
+		$this->app->redirect('/login');
+	}
     /**
      * GET /login.
      */
@@ -39,11 +44,20 @@ class AuthController extends ControllerAbstract
 		$email    = $this->app->request()->post('email');
 		$password = $this->app->request()->post('password');
 		if (empty($email) || empty($password) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-			$this->app->flash('error', 'Invalid password or email');
-			$this->app->redirect('/login');
+			$this->invalidLogin();
 			return;
 		}
-		$_SESSION['email'] = $email;
+
+		$userRepository = $this->app->container->get('user.repository');
+		$user = $userRepository->find($email);
+		if (!$user) {
+
+			$this->invalidLogin();
+
+			return;
+		}
+		
+		$_SESSION['email'] = $user->getId();
         $this->app->redirect('/');
     }
 
