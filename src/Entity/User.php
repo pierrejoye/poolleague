@@ -1,8 +1,6 @@
 <?php
 
-namespace PickleWeb\Entity;
-
-use PickleWeb\Auth\ProviderMetadata;
+namespace Pool\Entity;
 
 /**
  * Class User.
@@ -17,6 +15,11 @@ class User implements \Serializable
     /**
      * @var string
      */
+    protected $passwordHash;
+
+    /**
+     * @var string
+     */
     protected $name;
 
     /**
@@ -27,13 +30,7 @@ class User implements \Serializable
     /**
      * @var string
      */
-    protected $isAdmin;
-
-    /**
-     * @var string
-     */
-    protected $isCaptain;
-
+    protected $role;
 
     /**
      * @return string
@@ -61,24 +58,6 @@ class User implements \Serializable
         $this->email = $email;
 
         return $this;
-    }
-
-    /**
-     * @param bool
-     * 
-     * @return null
-     */
-    public function setIsAdmin($isAdmin)
-    {
-        this->isAdmin = (bool)$isAdmin;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isAdmin()
-    {
-        return $this->isAdmin;
     }
 
 
@@ -121,6 +100,40 @@ class User implements \Serializable
 
         return $this;
     }
+
+
+	public function setPassword($password)
+	{
+		$this->passwordHash = password_hash($password, PASSWORD_DEFAULT);
+		return $this;
+	}
+
+
+	public function setRole($role)
+	{
+		$this->role = $role;
+		return $this;
+	}
+
+	public function isCaptain()
+	{
+		return $this->role == 'captain' ? true : false;
+	}
+
+	public function isAdmin()
+	{
+		return $this->role == 'admin'? true : false;
+	}
+
+	public function getRole()
+	{
+		return $this->role;
+	}
+
+	public function checkPassword($password) {
+		if (!password_verify($password, $this->passwordHash)) {
+		}
+	}
 
     /**
      * {@inheritdoc}
