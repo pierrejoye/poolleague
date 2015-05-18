@@ -3,14 +3,19 @@
         {% if user %}
             <li><a href="/profile">Account</a></li>
             <li><a href="/logout">Logout</a></li>
+            {% if user.isAdmin() %}
+                <li><a href="/teams">Manage league days</a></li>
+            {% endif %}
         {% else %}
             <li><a href="/login">Login</a></li>
         {% endif %}
+            <li><a href="/ranking">Ranking</a></li>
+            <li><a href="/teams">Teams</a></li>
     </ul>
 
-    {% if user %}
+    {% if user.isCaptain() %}
         <p class="navbar-btn pull-right">
-            <a href="/package/register" class="btn btn-primary">Register a new extension</a>
+            <a href="/team/manage" class="btn btn-primary">Manage your team</a>
         </p>
     {% endif %}
 </nav>
