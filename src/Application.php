@@ -1,4 +1,5 @@
 <?php
+
 namespace Pool;
 
 use Pool\Entity\User;

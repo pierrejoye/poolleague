@@ -22,12 +22,11 @@ class Team implements \Serializable
      */
     protected $teamId;
 
-	/**
+    /**
      * @var array
      */
     protected $players = [];
 
-	
     /**
      * @return string
      */
@@ -47,14 +46,14 @@ class Team implements \Serializable
     /**
      * @return array
      */
-	public function getPlayers()
-	{
-	}
+    public function getPlayers()
+    {
+    }
 
-	public function addPlayers(User $user)
-	{
-		return $this;
-	}
+    public function addPlayers(User $user)
+    {
+        return $this;
+    }
 
     /**
      * @return string

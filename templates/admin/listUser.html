@@ -1,0 +1,32 @@
+{% extends "index.html" %}
+
+{% set title = 'BKK Pool League' %}
+
+{% block content %}
+<a href="/admin/user/add">add an user</a> | <a href="#">search an user</a>
+<div class="table-responsive">
+<table summary="Users list" class="table table-bordered table-hover">
+	<caption class="text-center">List of users</caption>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Team</th>
+			<th>Role</th>
+			<th>Email</th>
+			<th>Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for user in users %}
+		<tr>
+			<td>{{ user.getName()|escape }}</td>
+			<td>{{ user.getTeam()|escape }}</td>
+			<td>{{ user.getRole()|escape }}</td>
+			<td><a href="/admin/user/edit?id={{ user.getEmail()|escape|url_encode(true) }}">{{ user.getEmail()|escape }}</a></td>
+			<td>Edit||Remove</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+</div>
+{% endblock %}
