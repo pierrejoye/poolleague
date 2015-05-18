@@ -21,7 +21,13 @@
                 {% else %}
                     <a class="btn btn-lg btn-default" href="/profile">Account</a>
                     <a class="btn btn-lg btn-default" href="/logout">Logout</a>
-                    <a class="btn btn-lg btn-primary" href="/leagueday/">Show league day</a>
+                    <a class="btn btn-lg btn-primary" href="/leagueday/list">Show league days</a>
+                    <a class="btn btn-lg btn-primary" href="/team/manage">Manage your team</a>
+                    <a class="btn btn-lg btn-primary" href="/ranking">Ranking</a>
+                {% if user.isAdmin() %}
+                    <a  class="btn btn-lg btn-primary" href="/admin/leaguedays">Manage league days</a>
+                    <a  class="btn btn-lg btn-primary" href="/admin/manage/teams">Manage teams</a>
+            {% endif %}
                 {% endif %}
             </p>
         </div>
