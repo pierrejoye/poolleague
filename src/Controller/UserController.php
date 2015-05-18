@@ -3,7 +3,6 @@
 namespace Pool\Controller;
 
 use Pool\Entity\User;
-use Pool\Entity\UserRepository;
 
 /**
  * Class UserController.
@@ -16,7 +15,7 @@ class UserController extends ControllerAbstract
     public function profileAction()
     {
         $this->app->render('user/profile.html', [
-        'user' => $this->app->user()
+        'user' => $this->app->user(),
         ]);
     }
 }

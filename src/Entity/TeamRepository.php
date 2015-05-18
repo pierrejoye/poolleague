@@ -43,9 +43,8 @@ class TeamRepository
      */
     public function remove(Team $team)
     {
-		$id = $team->getId();
-		$tx->hdel(self::TEAM_HASH_STORE, $id);
-
+        $id = $team->getId();
+        $tx->hdel(self::TEAM_HASH_STORE, $id);
     }
 
     /**
@@ -60,22 +59,23 @@ class TeamRepository
         return empty($team) ? null : unserialize($team);
     }
 
-	/**
-     *
+    /**
      * @return array|null
      */
     public function getAll()
     {
         $teams = $this->redisClient->hgetall(self::TEAM_HASH_STORE);
-        
+
         if ($teams && is_array($teams)) {
-			$result = [];
-			foreach ($teams as $team) {
-				$result[] = unserialize($team);
-			}
-			return $result;
-		}
-		return null;
+            $result = [];
+            foreach ($teams as $team) {
+                $result[] = unserialize($team);
+            }
+
+            return $result;
+        }
+
+        return;
     }
 }
 

@@ -1,10 +1,10 @@
 <?php
+
 namespace Pool\Controller;
 
 use Pool\Entity\User;
-use Pool\Entity\UserRepository;
 use Pool\Entity\Team;
-use Pool\Entity\TeamRepository;
+
 /**
  * Class AuthController.
  */
@@ -31,6 +31,7 @@ class AdminTeamController extends ControllerAbstract
         if (!$id) {
             $this->flash('error', 'Cannot find this user');
             $this->redirect('/admin/team/list');
+
             return;
         }
 
@@ -40,6 +41,7 @@ class AdminTeamController extends ControllerAbstract
         if (!$user) {
             $this->flash('error', 'Cannot find this user');
             $this->redirect('/admin/team/list');
+
             return;
         }
         $data['name'] = $user->getName();
@@ -47,6 +49,7 @@ class AdminTeamController extends ControllerAbstract
         $data['role'] = $user->getRole();
         $data['mode'] = 'edit';
         $this->app->render('admin/addTeam.html', $data);
+
         return;
     }
 
@@ -57,7 +60,7 @@ class AdminTeamController extends ControllerAbstract
     {
         $this->checkHash();
         $edit = $this->app->request()->post('edit') == 1 ? true : false;
-        
+
         $name = $this->app->request()->post('name');
         $email = $this->app->request()->post('email');
         $password = $this->app->request()->post('password');
@@ -97,11 +100,11 @@ class AdminTeamController extends ControllerAbstract
                 'name' => $name,
                 'email' => $email,
                 ];
-			$this->app->flash('error', implode("\n", $msg));
+            $this->app->flash('error', implode("\n", $msg));
             $this->app->redirect('/admin/user/add?valid=1');
         }
 
-        $user = new Team;
+        $user = new Team();
         $user->setName($name);
         $user->setCaptain($email);
 
@@ -141,7 +144,7 @@ class AdminTeamController extends ControllerAbstract
             return;
         }
 
-        $team = new Team;
+        $team = new Team();
         $team->setName($name);
         $team->setCaptain($captain);
         $id = $team->getId();
@@ -155,7 +158,7 @@ class AdminTeamController extends ControllerAbstract
         $teamRepository = $this->app->container->get('team.repository');
         $teams = $teamRepository->getAll();
         $this->app->render('admin/listTeam.html', [
-            'teams' => $teams
+            'teams' => $teams,
         ]);
     }
 }

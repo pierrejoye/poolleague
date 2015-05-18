@@ -1,8 +1,8 @@
 <?php
+
 namespace Pool\Controller;
 
 use Pool\Entity\User;
-use Pool\Entity\UserRepository;
 
 /**
  * Class AuthController.
@@ -31,17 +31,19 @@ class AdminUserController extends ControllerAbstract
         if (!$user) {
             $this->flash('error', 'Cannot find this user');
             $this->redirect('/admin/user/list');
+
             return;
         }
 
         $data = ['h' => $this->getHash()];
 
-        $data['name']  = $user->getName();
+        $data['name'] = $user->getName();
         $data['email'] = $user->getEmail();
-        $data['role']  = $user->getRole();
-        $data['id']    = $user->getId();
-        $data['mode']  = 'edit';
+        $data['role'] = $user->getRole();
+        $data['id'] = $user->getId();
+        $data['mode'] = 'edit';
         $this->app->render('admin/addUser.html', $data);
+
         return;
     }
 
@@ -56,9 +58,10 @@ class AdminUserController extends ControllerAbstract
         if (!$userRepository->find($id) || $id != $idPost) {
             $this->app->flash('error', 'Cannot find this user');
             $this->app->redirect('/admin/user/list');
+
             return;
         }
-        
+
         $name = $this->app->request()->post('name');
         $email = $this->app->request()->post('email');
         $password = $this->app->request()->post('password');
@@ -87,20 +90,19 @@ class AdminUserController extends ControllerAbstract
             }
         }
 
-
         if (count($msg)) {
             $_SESSION['form-data'] = [
                 'name' => $name,
                 'email' => $email,
                 ];
-			$this->app->flash('error', implode("\n", $msg));
+            $this->app->flash('error', implode("\n", $msg));
             $this->app->redirect('/admin/user/add?valid=1');
         }
 
-		$user = new User;
-		$user->setName($name);
-		$user->setEmail($email);
-		$user->setRole($role);
+        $user = new User();
+        $user->setName($name);
+        $user->setEmail($email);
+        $user->setRole($role);
         $user->setId($id);
         if (!empty($password)) {
             $user->setPassword($password);
@@ -117,7 +119,7 @@ class AdminUserController extends ControllerAbstract
     public function addUserAction()
     {
         $this->checkHash();
-        
+
         $name = $this->app->request()->post('name');
         $email = $this->app->request()->post('email');
         $password = $this->app->request()->post('password');
@@ -148,7 +150,7 @@ class AdminUserController extends ControllerAbstract
         }
 
         $userRepository = $this->app->container->get('user.repository');
-        if ($userRepository->find($email)) {
+        if ($userRepository->findByEmail($email)) {
             $msg[] = 'This emal is already used, email can only be used for one user';
         }
 
@@ -157,14 +159,16 @@ class AdminUserController extends ControllerAbstract
                 'name' => $name,
                 'email' => $email,
                 ];
-			$this->app->flash('error', implode("\n", $msg));
+            $this->app->flash('error', implode("\n", $msg));
             $this->app->redirect('/admin/user/add?valid=1');
+
+            return;
         }
 
-		$user = new User;
-		$user->setName($name);
-		$user->setEmail($email);
-		$user->setRole($role);
+        $user = new User();
+        $user->setName($name);
+        $user->setEmail($email);
+        $user->setRole($role);
         $user->setPassword($password);
 
         $userRepository = $this->app->container->get('user.repository');
@@ -172,17 +176,15 @@ class AdminUserController extends ControllerAbstract
         $this->app->redirect('/admin/user/add');
     }
 
-
     /**
      * GET /admin/user/list/.
      */
-
     public function listAction()
     {
         $userRepository = $this->app->container->get('user.repository');
         $users = $userRepository->getAll();
         $this->app->render('admin/listUser.html', [
-            'users' => $users
+            'users' => $users,
         ]);
     }
 }

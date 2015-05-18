@@ -8,7 +8,7 @@ namespace Pool\Entity;
 class User implements \Serializable
 {
     /**
-     * @var integer
+     * @var int
      */
     protected $id;
 
@@ -38,12 +38,14 @@ class User implements \Serializable
     protected $role;
 
     /**
-     * @param integer
+     * @param int
+     *
      * @return User
      */
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -74,7 +76,6 @@ class User implements \Serializable
 
         return $this;
     }
-
 
     /**
      * @return string
@@ -116,39 +117,40 @@ class User implements \Serializable
         return $this;
     }
 
+    public function setPassword($password)
+    {
+        $this->passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-	public function setPassword($password)
-	{
-		$this->passwordHash = password_hash($password, PASSWORD_DEFAULT);
-		return $this;
-	}
+        return $this;
+    }
 
+    public function setRole($role)
+    {
+        $this->role = $role;
 
-	public function setRole($role)
-	{
-		$this->role = $role;
-		return $this;
-	}
+        return $this;
+    }
 
-	public function isCaptain()
-	{
-		return $this->role == 'captain' ? true : false;
-	}
+    public function isCaptain()
+    {
+        return $this->role == 'captain' ? true : false;
+    }
 
-	public function isAdmin()
-	{
-		return $this->role == 'admin'? true : false;
-	}
+    public function isAdmin()
+    {
+        return $this->role == 'admin' ? true : false;
+    }
 
-	public function getRole()
-	{
-		return $this->role;
-	}
+    public function getRole()
+    {
+        return $this->role;
+    }
 
-	public function checkPassword($password) {
-		if (!password_verify($password, $this->passwordHash)) {
-		}
-	}
+    public function checkPassword($password)
+    {
+        if (!password_verify($password, $this->passwordHash)) {
+        }
+    }
 
     /**
      * {@inheritdoc}

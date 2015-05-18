@@ -22,7 +22,7 @@ class Team implements \Serializable
      */
     protected $picture;
 
-	/**
+    /**
      * @var string
      */
     protected $captainId;
@@ -57,15 +57,15 @@ class Team implements \Serializable
         return $this;
     }
 
-
     /**
      * @return int
      */
     public function getId()
     {
-		if (!$this->id) {
-			$this->id = $redis->incr("team_ids");
-		}
+        if (!$this->id) {
+            $this->id = $redis->incr('team_ids');
+        }
+
         return $this->id;
     }
 
@@ -89,10 +89,10 @@ class Team implements \Serializable
         return $this;
     }
 
-	public function setCaptain($id)
-	{
-		$this->captainId = $id;
-	}
+    public function setCaptain($id)
+    {
+        $this->captainId = $id;
+    }
 
     /**
      * @return string

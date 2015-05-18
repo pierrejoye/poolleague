@@ -26,26 +26,27 @@ abstract class ControllerAbstract
     {
         $h = bin2hex(openssl_random_pseudo_bytes(16));
         $_SESSION['h'] = $h;
+
         return $h;
     }
 
     protected function checkHash()
     {
-		$hRequest = $this->app->request()->post('h');
-		$hSession = isset($_SESSION['h']) ?  $_SESSION['h'] : false;
-		if (!is_string($hRequest) || !is_string($hSession)) {
-			$failed = true;
-		} else {
-			if (!hash_equals($hSession, $hRequest)) {
-				$failed = true;
-			}
-		}
+        $hRequest = $this->app->request()->post('h');
+        $hSession = isset($_SESSION['h']) ?  $_SESSION['h'] : false;
+        if (!is_string($hRequest) || !is_string($hSession)) {
+            $failed = true;
+        } else {
+            if (!hash_equals($hSession, $hRequest)) {
+                $failed = true;
+            }
+        }
 
-		unset($_SESSION['h']);
+        unset($_SESSION['h']);
 
-		if ($failed) {
-			$this->app->redirect('/');
-		}
+        if ($failed) {
+            $this->app->redirect('/');
+        }
     }
 }
 
