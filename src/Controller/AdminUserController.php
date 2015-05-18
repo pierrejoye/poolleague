@@ -22,14 +22,6 @@ class AdminUserController extends ControllerAbstract
     }
 
     /**
-     */
-    protected function invalidLogin()
-    {
-        $this->app->flash('error', 'Invalid password or email');
-        $this->app->redirect('/login');
-    }
-
-    /**
      * GET /login.
      */
     public function editFormAction()
