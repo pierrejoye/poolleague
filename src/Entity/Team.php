@@ -1,12 +1,17 @@
 <?php
 
-namespace PickleWeb\Entity;
+namespace Pool\Entity;
 
 /**
  * Class User.
  */
 class Team implements \Serializable
 {
+    /**
+     * @var string
+     */
+    protected $id = false;
+
     /**
      * @var string
      */
@@ -17,6 +22,11 @@ class Team implements \Serializable
      */
     protected $picture;
 
+	/**
+     * @var string
+     */
+    protected $captainId;
+
     /**
      * @var string
      */
@@ -26,14 +36,6 @@ class Team implements \Serializable
      * @var array
      */
     protected $players = [];
-
-    /**
-     * @return string
-     */
-    public function getId()
-    {
-        return strtolower(trim($this->email));
-    }
 
     /**
      * @return User
@@ -55,6 +57,18 @@ class Team implements \Serializable
         return $this;
     }
 
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+		if (!$this->id) {
+			$this->id = $redis->incr("team_ids");
+		}
+        return $this->id;
+    }
+
     /**
      * @return string
      */
@@ -74,6 +88,11 @@ class Team implements \Serializable
 
         return $this;
     }
+
+	public function setCaptain($id)
+	{
+		$this->captainId = $id;
+	}
 
     /**
      * @return string

@@ -22,8 +22,8 @@
 			<td>{{ user.getName()|escape }}</td>
 			<td>{{ user.getTeam()|escape }}</td>
 			<td>{{ user.getRole()|escape }}</td>
-			<td><a href="/admin/user/edit?id={{ user.getEmail()|escape|url_encode(true) }}">{{ user.getEmail()|escape }}</a></td>
-			<td>Edit||Remove</td>
+			<td><a href="/admin/user/edit/{{ user.getId() }}">{{ user.getEmail()|escape }}</a></td>
+			<td><a href="/admin/user/edit/{{ user.getId() }}">Edit</a>&nbsp;||&nbsp;<a href="/admin/user/del?id={{ user.getId() }}">Remove</a></td>
 		</tr>
 		{% endfor %}
 	</tbody>

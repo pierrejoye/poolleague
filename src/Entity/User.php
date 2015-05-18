@@ -8,6 +8,11 @@ namespace Pool\Entity;
 class User implements \Serializable
 {
     /**
+     * @var integer
+     */
+    protected $id;
+
+    /**
      * @var string
      */
     protected $email;
@@ -33,11 +38,21 @@ class User implements \Serializable
     protected $role;
 
     /**
+     * @param integer
+     * @return User
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getId()
     {
-        return strtolower(trim($this->email));
+        return $this->id;
     }
 
     /**

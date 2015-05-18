@@ -3,34 +3,32 @@
 
 {% block content %}
 <a href="/admin/user/list">return to the list</a>
-<form id="adduser-form" action="{% if mode == "edit" %}/admin/user/edit{% else %}/admin/user/add{% endif %} " method="POST"  autocomplete="off">
+<form id="adduser-form" action="{% if mode == "edit" %}/admin/user/edit/{{ id }}{% else %}/admin/user/add{% endif %} " method="POST"  autocomplete="off">
 	<div class="row">
 		<div class="col-lg-12">
-		<h1>Add a user</h1>
+		<h1>{% if mode == "edit" %}Edit{% else %}Add{% endif %} a user</h1>
 		</div>
 	</div>
 	<div class="row">
 		<div class="row">
 			<div class="col-lg-12 search-form">
-			<label for="name">Name</label> <input type="text" id="name" name="name" value="{{ name }}">
+				<label for="name">Name</label>
+				<input type="text" id="name" name="name" value="{{ name }}">
 			</div>
 			<div class="col-lg-12 search-form">
-			<label for="email">Email</label>: 
-			{% if mode != "edit" %}
-			<input type="email" id="email" name="email" value="{{ email }}">
-			{% else %}
-			{{ email|escape }}
-			{% endif %}
+				<label for="email">Email</label>: 
+				<input type="email" id="email" name="email" value="{{ email }}">
 			</div>
 			<div class="col-lg-12 search-form">
-			<p><label for="password">Password</label> <input type="password" id="password" name="password"></p>
-			<label for="passwordconfirm">Re-type the password</label><input type="password" id="passwordconfirm" name="passwordconfirm">
+				<p><label for="password">Password</label> <input type="password" id="password" name="password"></p>
+				<label for="passwordconfirm">Re-type the password</label><input type="password" id="passwordconfirm" name="passwordconfirm">
 			</div>
 			<div class="col-lg-12 search-form">
-			<label for="role">Role</label> <select id="role" name="role">
-				<option {% if user.isCaptain %} selected="selected"{% endif %} value="captain">Captain</option>
-				<option {% if user.isAdmin %} selected="selected"{% endif %} value="admin">Admin</option>
-			</select>
+				<label for="role">Role</label>
+				<select id="role" name="role">
+					<option {% if user.isCaptain %} selected="selected"{% endif %} value="captain">Captain</option>
+					<option {% if user.isAdmin %} selected="selected"{% endif %} value="admin">Admin</option>
+				</select>
 			</div>
 			<div class="col-lg-12 search-form">
 			{% if mode != "edit" %}
@@ -42,6 +40,7 @@
 		</div>
 	</div>
 	<input type="hidden" name="h" value="{{ h }}">
+	<input type="hidden" name="id" value="{{ id }}">
 </form>
 <a href="/admin/user/list">return to the list</a>
 {% endblock %}

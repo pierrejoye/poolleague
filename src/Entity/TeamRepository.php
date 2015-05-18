@@ -6,7 +6,7 @@ use Predis\Client;
 use Predis\Transaction\MultiExec;
 
 /**
- * Class UserRepository.
+ * Class TeamRepository.
  */
 class TeamRepository
 {
@@ -26,40 +26,56 @@ class TeamRepository
     }
 
     /**
-     * @param User $user
+     * @param Team
      */
     public function persist(Team $team)
     {
         $this->redisClient->transaction(
             function (MultiExec $tx) use ($team) {
-                $id = $user->getId();
+                $id = $team->getId();
                 $tx->hset(self::TEAM_HASH_STORE, $id, serialize($team));
             }
         );
     }
 
     /**
-     * @param User $user
+     * @param Team
      */
     public function remove(Team $team)
     {
-        $this->redisClient->transaction(
-            function (MultiExec $tx) use ($team) {
-                $id = $user->getId();
-                $tx->hdel(self::TEAM_HASH_STORE, $id);
-        );
+		$id = $team->getId();
+		$tx->hdel(self::TEAM_HASH_STORE, $id);
+
     }
 
     /**
      * @param string $email
      *
-     * @return User|null
+     * @return Team|null
      */
     public function find($teamId)
     {
-        $user = $this->redisClient->hget(self::TEAM_HASH_STORE, strtolower(trim($teamId)));
+        $team = $this->redisClient->hget(self::TEAM_HASH_STORE, strtolower(trim($teamId)));
 
         return empty($team) ? null : unserialize($team);
+    }
+
+	/**
+     *
+     * @return array|null
+     */
+    public function getAll()
+    {
+        $teams = $this->redisClient->hgetall(self::TEAM_HASH_STORE);
+        
+        if ($teams && is_array($teams)) {
+			$result = [];
+			foreach ($teams as $team) {
+				$result[] = unserialize($team);
+			}
+			return $result;
+		}
+		return null;
     }
 }
 

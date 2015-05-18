@@ -24,38 +24,40 @@ class AdminUserController extends ControllerAbstract
     /**
      * GET /login.
      */
-    public function editFormAction()
+    public function editFormAction($id)
     {
-        $id = $this->app->request->get('id');
-        if (!$id) {
-            $this->flash('error', 'Cannot find this user');
-            //$this->redirect('/admin/user/list');
-            return;
-        }
-
-        $data = ['h' => $this->getHash()];
         $userRepository = $this->app->container->get('user.repository');
         $user = $userRepository->find($id);
         if (!$user) {
             $this->flash('error', 'Cannot find this user');
-            //$this->redirect('/admin/user/list');
+            $this->redirect('/admin/user/list');
             return;
         }
-        $data['name'] = $user->getName();
+
+        $data = ['h' => $this->getHash()];
+
+        $data['name']  = $user->getName();
         $data['email'] = $user->getEmail();
-        $data['role'] = $user->getRole();
-        $data['mode'] = 'edit';
+        $data['role']  = $user->getRole();
+        $data['id']    = $user->getId();
+        $data['mode']  = 'edit';
         $this->app->render('admin/addUser.html', $data);
         return;
     }
 
     /**
-     * POST /login.
+     * POST /admin/user/edit.
      */
-    public function updateAction()
+    public function updateAction($id)
     {
         $this->checkHash();
-        $edit = $this->app->request()->post('edit') == 1 ? true : false;
+        $idPost = $this->app->request()->post('id');
+        $userRepository = $this->app->container->get('user.repository');
+        if (!$userRepository->find($id) || $id != $idPost) {
+            $this->app->flash('error', 'Cannot find this user');
+            $this->app->redirect('/admin/user/list');
+            return;
+        }
         
         $name = $this->app->request()->post('name');
         $email = $this->app->request()->post('email');
@@ -85,11 +87,6 @@ class AdminUserController extends ControllerAbstract
             }
         }
 
-        $userRepository = $this->app->container->get('user.repository');
-        if (!$userRepository->find($email)) {
-            $msg[] = 'Cannot find this user';
-            $this->app->redirect('/admin/user/list');
-        }
 
         if (count($msg)) {
             $_SESSION['form-data'] = [
@@ -104,6 +101,7 @@ class AdminUserController extends ControllerAbstract
 		$user->setName($name);
 		$user->setEmail($email);
 		$user->setRole($role);
+        $user->setId($id);
         if (!empty($password)) {
             $user->setPassword($password);
         }
@@ -119,7 +117,6 @@ class AdminUserController extends ControllerAbstract
     public function addUserAction()
     {
         $this->checkHash();
-        $edit = $this->app->request()->post('edit') == 1 ? true : false;
         
         $name = $this->app->request()->post('name');
         $email = $this->app->request()->post('email');
@@ -179,7 +176,6 @@ class AdminUserController extends ControllerAbstract
     {
         $userRepository = $this->app->container->get('user.repository');
         $users = $userRepository->getAll();
-
         $this->app->render('admin/listUser.html', [
             'users' => $users
         ]);

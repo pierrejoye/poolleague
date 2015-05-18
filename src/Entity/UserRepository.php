@@ -30,12 +30,14 @@ class UserRepository
      */
     public function persist(User $user)
     {
-        $this->redisClient->transaction(
-            function (MultiExec $tx) use ($user) {
-                $id = $user->getId();
-                $tx->hset(self::USER_HASH_STORE, $id, serialize($user));
-            }
-        );
+		var_dUmp($user);
+		$id = $user->getId();
+		if (!$id) {
+			$id = $this->redisClient->incr(self::USER_HASH_STORE.'_id');
+			$user->setId($id);
+		}
+		var_dUmp($user);
+		$this->redisClient->hset(self::USER_HASH_STORE, $id, serialize($user));
     }
 
     /**
@@ -43,12 +45,8 @@ class UserRepository
      */
     public function remove(User $user)
     {
-        $this->redisClient->transaction(
-            function (MultiExec $tx) use ($user) {
-                $id = $user->getId();
-                $tx->hdel(self::USER_HASH_STORE, $id);
-            }
-        );
+  		$id = $user->getId();
+		$this->redisClient->hdel(self::USER_HASH_STORE, $id);
     }
 
     /**

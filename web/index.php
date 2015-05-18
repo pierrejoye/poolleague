@@ -3,6 +3,7 @@ require __DIR__.'/../vendor/autoload.php';
 use Slim\Helper\Set;
 use Pool\Application;
 use Pool\Entity\UserRepository;
+use Pool\Entity\TeamRepository;
 
 function check_or_create_json_dir(Application $app)
 {
@@ -53,6 +54,14 @@ $app->container->singleton(
 );
 
 
+// User repository
+$app->container->singleton(
+    'team.repository',
+    function (Set $container) {
+        return new TeamRepository($container->get('redis.client'));
+    }
+);
+
 // Default
 $app->get('/', 'Pool\Controller\DefaultController:indexAction');
 
@@ -66,15 +75,23 @@ $app->post('/login', 'Pool\Controller\AuthController:loginAction');
 $app->get('/logout', 'Pool\Controller\AuthController:logoutAction');
 
 // Admin
+
+// User
+$app->get('/admin/user/list', 'Pool\Controller\AdminUserController:listAction');
+
 $app->get('/admin/user/add', 'Pool\Controller\AdminUserController:addUserFormAction');
 $app->post('/admin/user/add', 'Pool\Controller\AdminUserController:addUserAction');
 
-$app->get('/admin/user/list', 'Pool\Controller\AdminUserController:listAction');
-$app->get('/admin/user/edit', 'Pool\Controller\AdminUserController:editFormAction');
-$app->post('/admin/user/edit', 'Pool\Controller\AdminUserController:updateAction');
+$app->get('/admin/user/edit/:id', 'Pool\Controller\AdminUserController:editFormAction');
+$app->post('/admin/user/edit/:id', 'Pool\Controller\AdminUserController:updateAction');
 
-$app->get('/admin/team/list', 'Pool\Controller\AdminUserController:listAction');
-$app->get('/admin/team/edit', 'Pool\Controller\AdminUserController:editFormAction');
-$app->post('/admin/team/edit', 'Pool\Controller\AdminUserController:updateAction');
+$app->get('/admin/team/list', 'Pool\Controller\AdminTeamController:listAction');
+
+// Team
+$app->get('/admin/team/add', 'Pool\Controller\AdminTeamController:addFormAction');
+$app->post('/admin/team/add', 'Pool\Controller\AdminTeamController:addAction');
+
+$app->get('/admin/team/edit/id', 'Pool\Controller\AdminUserController:editFormAction');
+$app->post('/admin/team/edit/:id', 'Pool\Controller\AdminUserController:updateAction');
 
 $app->run();
