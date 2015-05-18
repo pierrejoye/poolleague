@@ -18,16 +18,16 @@
             <p>
                 {% if not user %}
                     <a class="btn btn-lg btn-primary" href="/login">Login</a>
-                {% else %}
+                {% elseif user.isCaptain() %}
                     <a class="btn btn-lg btn-default" href="/profile">Account</a>
                     <a class="btn btn-lg btn-default" href="/logout">Logout</a>
                     <a class="btn btn-lg btn-primary" href="/leagueday/list">Show league days</a>
                     <a class="btn btn-lg btn-primary" href="/team/manage">Manage your team</a>
                     <a class="btn btn-lg btn-primary" href="/ranking">Ranking</a>
-                {% if user.isAdmin() %}
-                    <a  class="btn btn-lg btn-primary" href="/admin/leaguedays">Manage league days</a>
-                    <a  class="btn btn-lg btn-primary" href="/admin/manage/teams">Manage teams</a>
-            {% endif %}
+                {% elseif user.isAdmin() %}
+                    <a  class="btn btn-lg btn-primary" href="/admin/manage/teams">teams</a>
+                    <a  class="btn btn-lg btn-primary" href="/admin/leaguedays">League days</a>
+                    <a  class="btn btn-lg btn-primary" href="/admin/user/list">Users</a>
                 {% endif %}
             </p>
         </div>
