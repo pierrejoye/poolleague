@@ -69,9 +69,8 @@ class UserRepository
     {
         $id = $this->redisClient->hget(self::EMAIL2USER_HASH_STORE, strtolower(trim($email)));
         if (!$id) {
-            return;
+            return null;
         }
-
         return $this->find($id);
     }
 
