@@ -1,23 +1,23 @@
 <nav class="pull-right">
     <ul class="nav nav-pills pull-right">
         {% if user %}
-            <li><a href="/profile">Account</a></li>
-            <li><a href="/logout">Logout</a></li>
             {% if user.isAdmin() %}
-                <li><a href="/teams">Manage league days</a></li>
+                <li><a href="/teams" class="btn btn-primary">League days</a></li>
+                <li><a href="/admin/user/ranking" class="btn btn-primary">Ranking</a></li>
+                <li><a href="/admin/team/list" class="btn btn-primary">Teams</a></li>
+                <li><a href="/admin/user/list" class="btn btn-primary">Users</a></li>
             {% endif %}
+            {% if user.isCaptain() %}
+                <li><a href="/yourteam" class="btn btn-primary">Your team</a></li>
+                <li><a href="/enterscore" class="btn btn-primary">Enter Score</a></li>
+            {% endif %}
+            <li><a href="/profile" class="btn btn-primary">Account</a></li>
         {% else %}
+            <li><a href="/ranking" class="btn btn-primary">Ranking</a></li>
+            <li><a href="/leaguedays">Login</a></li>
             <li><a href="/login">Login</a></li>
         {% endif %}
-            <li><a href="/ranking">Ranking</a></li>
-            <li><a href="/teams">Teams</a></li>
     </ul>
-
-    {% if user.isCaptain() %}
-        <p class="navbar-btn pull-right">
-            <a href="/team/manage" class="btn btn-primary">Manage your team</a>
-        </p>
-    {% endif %}
 </nav>
 
 <h3 class="pull-left">
