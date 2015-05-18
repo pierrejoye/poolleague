@@ -56,10 +56,21 @@ $app->container->singleton(
 // Default
 $app->get('/', 'Pool\Controller\DefaultController:indexAction');
 
+// User
+$app->get('/profile', 'Pool\Controller\UserController:profileAction');
+
+
 // Authorization
 $app->get('/login', 'Pool\Controller\AuthController:loginFormAction');
 $app->post('/login', 'Pool\Controller\AuthController:loginAction');
 $app->get('/logout', 'Pool\Controller\AuthController:logoutAction');
 
+// Admin
+$app->get('/admin/user/add', 'Pool\Controller\AdminUserController:addUserFormAction');
+$app->post('/admin/user/add', 'Pool\Controller\AdminUserController:addUserAction');
+
+$app->get('/admin/user/list', 'Pool\Controller\AdminUserController:listAction');
+
+//$app->post('/admin/teams/manage', 'Pool\Controller\AdminTeamController:addUserAction');
 
 $app->run();
