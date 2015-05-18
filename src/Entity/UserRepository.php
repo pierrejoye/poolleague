@@ -34,18 +34,6 @@ class UserRepository
             function (MultiExec $tx) use ($user) {
                 $id = $user->getId();
                 $tx->hset(self::USER_HASH_STORE, $id, serialize($user));
-
-                if (!empty($user->getGithubId())) {
-                    $tx->hset('github_'.self::USER_HASH_STORE, $user->getGithubId(), $id);
-                }
-
-                if (!empty($user->getGoogleId())) {
-                    $tx->hset('google_'.self::USER_HASH_STORE, $user->getGoogleId(), $id);
-                }
-
-                if (!empty($user->getBitbucketId())) {
-                    $tx->hset('bitbucket_'.self::USER_HASH_STORE, $user->getBitbucketId(), $id);
-                }
             }
         );
     }
@@ -59,18 +47,6 @@ class UserRepository
             function (MultiExec $tx) use ($user) {
                 $id = $user->getId();
                 $tx->hdel(self::USER_HASH_STORE, $id);
-
-                if (!empty($user->getGithubId())) {
-                    $tx->hdel('github_'.self::USER_HASH_STORE, $user->getGithubId());
-                }
-
-                if (!empty($user->getGoogleId())) {
-                    $tx->hdel('google_'.self::USER_HASH_STORE, $user->getGoogleId());
-                }
-
-                if (!empty($user->getBitbucketId())) {
-                    $tx->hdel('bitbucket_'.self::USER_HASH_STORE, $user->getBitbucketId());
-                }
             }
         );
     }
@@ -87,30 +63,22 @@ class UserRepository
         return empty($user) ? null : unserialize($user);
     }
 
-    /**
-     * @param string $provider
-     * @param string $id
+	/**
      *
-     * @return null|User
+     * @return array|null
      */
-    public function findByProviderId($provider, $id)
+    public function getAll()
     {
-        $email = $this->redisClient->hget($provider.'_'.self::USER_HASH_STORE, $id);
-
-        return empty($email) ? null : $this->find($email);
-    }
-
-    /**
-     * @param string $provider
-     * @param string $id
-     *
-     * @return null|User
-     */
-    public function findByProviderApiKey($provider, $key)
-    {
-        $email = $this->redisClient->hget($provider.'_API_'.self::USER_HASH_STORE, $id);
-
-        return empty($email) ? null : $this->find($email);
+        $users = $this->redisClient->hgetall(self::USER_HASH_STORE);
+        
+        if ($users && is_array($users)) {
+			$result = [];
+			foreach ($users as $user) {
+				$result[] = unserialize($user);
+			}
+			return $result;
+		}
+		return null;
     }
 }
 
