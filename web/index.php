@@ -70,7 +70,8 @@ $app->get('/admin/user/add', 'Pool\Controller\AdminUserController:addUserFormAct
 $app->post('/admin/user/add', 'Pool\Controller\AdminUserController:addUserAction');
 
 $app->get('/admin/user/list', 'Pool\Controller\AdminUserController:listAction');
-
+$app->get('/admin/user/edit', 'Pool\Controller\AdminUserController:editFormAction');
+$app->post('/admin/user/edit', 'Pool\Controller\AdminUserController:updateAction');
 //$app->post('/admin/teams/manage', 'Pool\Controller\AdminTeamController:addUserAction');
 
 $app->run();
