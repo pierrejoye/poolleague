@@ -22,7 +22,7 @@ class AdminUserController extends ControllerAbstract
     }
 
     /**
-     * GET /login.
+     * GET /admin/user/edit/:id.
      */
     public function editFormAction($id)
     {
@@ -46,7 +46,7 @@ class AdminUserController extends ControllerAbstract
     }
 
     /**
-     * POST /admin/user/edit.
+     * POST /admin/user/edit/:id.
      */
     public function updateAction($id)
     {
@@ -112,7 +112,7 @@ class AdminUserController extends ControllerAbstract
     }
 
     /**
-     * GET /login.
+     * GET /admin/user/add/.
      */
     public function addUserAction()
     {
@@ -171,6 +171,11 @@ class AdminUserController extends ControllerAbstract
         $user = $userRepository->persist($user);
         $this->app->redirect('/admin/user/add');
     }
+
+
+    /**
+     * GET /admin/user/list/.
+     */
 
     public function listAction()
     {
