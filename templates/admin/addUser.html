@@ -26,8 +26,8 @@
 			<div class="col-lg-12 search-form">
 				<label for="role">Role</label>
 				<select id="role" name="role">
-					<option {% if user.isCaptain %} selected="selected"{% endif %} value="captain">Captain</option>
-					<option {% if user.isAdmin %} selected="selected"{% endif %} value="admin">Admin</option>
+					<option {% if role == "captain" %} selected="selected"{% endif %} value="captain">Captain</option>
+					<option {% if role == "admin" %} selected="selected"{% endif %} value="admin">Admin</option>
 				</select>
 			</div>
 			<div class="col-lg-12 search-form">
