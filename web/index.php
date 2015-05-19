@@ -54,7 +54,6 @@ $app->container->singleton(
     }
 );
 
-
 // Team repository
 $app->container->singleton(
     'team.repository',
