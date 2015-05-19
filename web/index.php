@@ -18,6 +18,7 @@ $cacheDir = __DIR__.'/../cache/';
 $app = new \Pool\Application(
     [
 		'view'      => new \Pool\View\Twig(),
+		//'view'      => new \Pool\View\Twig(['strict_variables' => true]),
         //'view'      => new \Pool\View\Twig(['cache' => $cacheDir . 'twig']),
         'json_path' => __DIR__.'/json/',
         'cache_dir' => $cacheDir,
@@ -54,7 +55,7 @@ $app->container->singleton(
 );
 
 
-// User repository
+// Team repository
 $app->container->singleton(
     'team.repository',
     function (Set $container) {
@@ -91,7 +92,7 @@ $app->get('/admin/team/list', 'Pool\Controller\AdminTeamController:listAction');
 $app->get('/admin/team/add', 'Pool\Controller\AdminTeamController:addFormAction');
 $app->post('/admin/team/add', 'Pool\Controller\AdminTeamController:addAction');
 
-$app->get('/admin/team/edit/id', 'Pool\Controller\AdminUserController:editFormAction');
-$app->post('/admin/team/edit/:id', 'Pool\Controller\AdminUserController:updateAction');
+$app->get('/admin/team/edit/:id', 'Pool\Controller\AdminTeamController:editFormAction');
+$app->post('/admin/team/edit/:id', 'Pool\Controller\AdminTeamController:updateAction');
 
 $app->run();

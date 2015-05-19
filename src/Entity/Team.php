@@ -23,27 +23,14 @@ class Team implements \Serializable
     protected $picture;
 
     /**
-     * @var string
+     * @var User
      */
-    protected $captainId;
-
-    /**
-     * @var string
-     */
-    protected $teamId;
+    protected $captain;
 
     /**
      * @var array
      */
     protected $players = [];
-
-    /**
-     * @return User
-     */
-    public function getCaptain()
-    {
-        return $this->email;
-    }
 
     /**
      * @return array
@@ -58,14 +45,22 @@ class Team implements \Serializable
     }
 
     /**
+     * @param int
+     *
+     * @return Team
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
      * @return int
      */
     public function getId()
     {
-        if (!$this->id) {
-            $this->id = $redis->incr('team_ids');
-        }
-
         return $this->id;
     }
 
@@ -80,18 +75,33 @@ class Team implements \Serializable
     /**
      * @param string
      *
-     * @return bool
+     * @return Team
      */
-    public function setName($nickname)
+    public function setName($name)
     {
-        $this->nickname = $nickname;
+        $this->name = $name;
 
         return $this;
     }
 
-    public function setCaptain($id)
+    /**
+     * @return User
+     */
+    public function getCaptainId()
     {
-        $this->captainId = $id;
+        return $this->captain;
+    }
+
+    /*
+     * @param User
+     *
+     * return $this
+     */
+    public function setCaptainId($id)
+    {
+        $this->captain = $id;
+
+        return $this;
     }
 
     /**
@@ -115,14 +125,6 @@ class Team implements \Serializable
     }
 
     /**
-     * @return string
-     */
-    public function getTeamId()
-    {
-        return $this->teamId;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function serialize()
@@ -143,6 +145,11 @@ class Team implements \Serializable
                 $this->$key = $value;
             }
         }
+    }
+
+    public function __toString()
+    {
+        return $this->getName();
     }
 }
 

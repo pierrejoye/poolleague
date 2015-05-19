@@ -10,6 +10,102 @@ use Pool\Entity\Team;
  */
 class AdminTeamController extends ControllerAbstract
 {
+    protected function getCaptainList()
+    {
+        $userRepository = $this->app->container->get('user.repository');
+        $users = $userRepository->getAll();
+        $selectCaptain = [];
+        foreach ($users as $user) {
+            $selectCaptain[$user->getId()] = $user->getName();
+        }
+
+        return $selectCaptain;
+    }
+
+    /**
+     * GET /login.
+     */
+    public function editFormAction($id)
+    {
+        $teamRepository = $this->app->container->get('team.repository');
+        $team = $teamRepository->find($id);
+        if (!$team) {
+            $this->app->flash('error', 'Cannot find this team');
+            $this->redirect('/admin/team/list');
+
+            return;
+        }
+
+        $selectCaptain = $this->getCaptainList();
+        $data = ['h' => $this->getHash()];
+        $data['selectCaptain'] = $selectCaptain;
+        $data['id'] = $team->getId();
+        $data['name'] = $team->getName();
+        $data['captain'] = $team->getCaptain();
+        $data['mode'] = 'edit';
+
+        $this->app->render('admin/addTeam.html', $data);
+
+        return;
+    }
+
+    /**
+     * POST /login.
+     */
+    public function updateAction($id)
+    {
+        $this->checkHash();
+        $edit = $this->app->request()->post('edit') == 1 ? true : false;
+        $name = $this->app->request()->post('name');
+        $captain = $this->app->request()->post('captain');
+        $postId = $this->app->request()->post('id');
+
+        if ($id != $postId) {
+            $this->app->flash('error', 'Invalid form, IDs do not match');
+            $this->app->redirect('/admin/team/list');
+
+            return;
+        }
+
+        $teamRepository = $this->app->container->get('team.repository');
+        if (!$teamRepository->find($id)) {
+            $this->app->flash('error', 'Cannot find this team');
+            $this->app->redirect('/admin/team/list');
+        }
+
+        $msg = [];
+
+        $name = filter_var($name, FILTER_SANITIZE_STRING);
+        if (strlen($name) < 2) {
+            $msg[] = 'Invalid name';
+        }
+        $userRepository = $this->app->container->get('user.repository');
+        $captain = $userRepository->find($captain);
+        if (!$captain) {
+            $msg[] = 'Cannot find this user to use as captain';
+        }
+
+        if (count($msg)) {
+            $_SESSION['form-data'] = [
+                'name' => $name,
+                'captain' => $captain,
+                'id' => $id,
+                ];
+            $this->app->flash('error', implode("\n", $msg));
+            $this->app->redirect('/admin/team/add?valid=1');
+
+            return;
+        }
+
+        $team = new Team();
+        $team->setName($name);
+        $team->setCaptain($captain);
+        $team->setId($id);
+
+        $team = $teamRepository->persist($team);
+        $this->app->redirect('/admin/team/list');
+    }
+
     /**
      * GET /admin/team/add.
      */
@@ -19,98 +115,9 @@ class AdminTeamController extends ControllerAbstract
         if ($this->app->request()->get('valid')) {
             $data = array_merge($data, $_SESSION['form-data']);
         }
+        $data['mode'] = 'add';
+        $data['selectCaptain'] = $this->getCaptainList();
         $this->app->render('admin/addTeam.html', $data);
-    }
-
-    /**
-     * GET /login.
-     */
-    public function editFormAction()
-    {
-        $id = $this->app->request->get('id');
-        if (!$id) {
-            $this->flash('error', 'Cannot find this user');
-            $this->redirect('/admin/team/list');
-
-            return;
-        }
-
-        $data = ['h' => $this->getHash()];
-        $userRepository = $this->app->container->get('user.repository');
-        $user = $userRepository->find($id);
-        if (!$user) {
-            $this->flash('error', 'Cannot find this user');
-            $this->redirect('/admin/team/list');
-
-            return;
-        }
-        $data['name'] = $user->getName();
-        $data['email'] = $user->getEmail();
-        $data['role'] = $user->getRole();
-        $data['mode'] = 'edit';
-        $this->app->render('admin/addTeam.html', $data);
-
-        return;
-    }
-
-    /**
-     * POST /login.
-     */
-    public function updateAction()
-    {
-        $this->checkHash();
-        $edit = $this->app->request()->post('edit') == 1 ? true : false;
-
-        $name = $this->app->request()->post('name');
-        $email = $this->app->request()->post('email');
-        $password = $this->app->request()->post('password');
-        $passwordConfirm = $this->app->request()->post('passwordconfirm');
-        $role = $this->app->request()->post('role');
-
-        $msg = [];
-
-        $email = filter_var($email, FILTER_VALIDATE_EMAIL);
-        if (!$email) {
-            $msg[] = 'Invalid email';
-        }
-
-        $name = filter_var($name, FILTER_SANITIZE_STRING);
-        if (strlen($name) < 2) {
-            $msg[] = 'Invalid name';
-        }
-
-        if (!in_array($role, ['captain', 'player', 'admin'])) {
-            $msg[] = 'Invalid role';
-        }
-
-        if (!empty($password)) {
-            if ($password !== $passwordConfirm) {
-                $msg[] = 'Passwords do not match or are too short, five characters minimum';
-            }
-        }
-
-        $userRepository = $this->app->container->get('user.repository');
-        if (!$TeamRepository->find($team)) {
-            $msg[] = 'Cannot find this user';
-            $this->app->redirect('/admin/user/list');
-        }
-
-        if (count($msg)) {
-            $_SESSION['form-data'] = [
-                'name' => $name,
-                'email' => $email,
-                ];
-            $this->app->flash('error', implode("\n", $msg));
-            $this->app->redirect('/admin/user/add?valid=1');
-        }
-
-        $user = new Team();
-        $user->setName($name);
-        $user->setCaptain($email);
-
-        $userRepository = $this->app->container->get('team.repository');
-        $user = $userRepository->persist($user);
-        $this->app->redirect('/admin/team/list');
     }
 
     /**
@@ -130,7 +137,8 @@ class AdminTeamController extends ControllerAbstract
         }
 
         $userRepository = $this->app->container->get('user.repository');
-        if (!$userRepository->find($captain)) {
+        $captain = $userRepository->find($captain);
+        if (!$captain) {
             $msg[] = 'cannot find this captain';
         }
 
@@ -143,22 +151,28 @@ class AdminTeamController extends ControllerAbstract
             //$this->app->redirect('/admin/team/add?valid=1');
             return;
         }
-
         $team = new Team();
         $team->setName($name);
-        $team->setCaptain($captain);
-        $id = $team->getId();
+        $team->setCaptainId($captain->getId());
         $teamRepository = $this->app->container->get('team.repository');
         $teamRepository->persist($team);
+
         $this->app->redirect('/admin/team/add');
     }
 
     public function listAction()
     {
         $teamRepository = $this->app->container->get('team.repository');
+        $userRepository = $this->app->container->get('user.repository');
         $teams = $teamRepository->getAll();
+        $captains = [];
+        foreach ($teams as $team) {
+            $captain = $userRepository->find(4);
+            $captains[$team->getId()] = $captain;
+        }
         $this->app->render('admin/listTeam.html', [
             'teams' => $teams,
+            'captains' => $captains,
         ]);
     }
 }

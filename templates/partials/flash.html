@@ -1,7 +1,8 @@
-{% if not class %}
+
+{% if class is not defined %}
     {% set class = type %}
 {% endif %}
 
-{% if flash[type] %}
+{% if flash[type] is defined %}
     <div class="alert alert-{{ class }}">{{ flash[type]|striptags }}</div>
 {% endif %}

@@ -174,6 +174,11 @@ class User implements \Serializable
             }
         }
     }
+
+    public function __toString()
+    {
+        return $this->getName();
+    }
 }
 
 /* vim: set tabstop=4 shiftwidth=4 expandtab: fdm=marker */

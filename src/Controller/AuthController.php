@@ -43,6 +43,7 @@ class AuthController extends ControllerAbstract
         $userRepository = $this->app->container->get('user.repository');
         $user = $userRepository->findByEmail($email);
         if (!$user) {
+            die('no user found');
             $this->invalidLogin();
 
             return;

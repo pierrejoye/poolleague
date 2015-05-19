@@ -3,7 +3,6 @@
 namespace Pool\Entity;
 
 use Predis\Client;
-use Predis\Transaction\MultiExec;
 
 /**
  * Class TeamRepository.
@@ -30,12 +29,13 @@ class TeamRepository
      */
     public function persist(Team $team)
     {
-        $this->redisClient->transaction(
-            function (MultiExec $tx) use ($team) {
-                $id = $team->getId();
-                $tx->hset(self::TEAM_HASH_STORE, $id, serialize($team));
-            }
-        );
+        $id = $team->getId();
+        if (!$id) {
+            $id = $this->redisClient->incr(self::TEAM_HASH_STORE.'_id');
+            $team->setId($id);
+        }
+
+        $this->redisClient->hset(self::TEAM_HASH_STORE, $id, serialize($team));
     }
 
     /**
@@ -57,6 +57,14 @@ class TeamRepository
         $team = $this->redisClient->hget(self::TEAM_HASH_STORE, strtolower(trim($teamId)));
 
         return empty($team) ? null : unserialize($team);
+    }
+
+    protected function getCaptainById($id)
+    {
+        $userRepository = $this->app->container->get('user.repository');
+        $captain = $userRepository->find($captain);
+
+        return $captain ? null : unserialize($captain);
     }
 
     /**
