@@ -41,7 +41,7 @@ class AdminTeamController extends ControllerAbstract
         $data['selectCaptain'] = $selectCaptain;
         $data['id'] = $team->getId();
         $data['name'] = $team->getName();
-        $data['captain'] = $team->getCaptain();
+        $data['captain'] = $team->getCaptainId();
         $data['mode'] = 'edit';
 
         $this->app->render('admin/addTeam.html', $data);
@@ -99,7 +99,7 @@ class AdminTeamController extends ControllerAbstract
 
         $team = new Team();
         $team->setName($name);
-        $team->setCaptain($captain);
+        $team->setCaptainId($captain->getId());
         $team->setId($id);
 
         $team = $teamRepository->persist($team);
@@ -167,8 +167,8 @@ class AdminTeamController extends ControllerAbstract
         $teams = $teamRepository->getAll();
         $captains = [];
         foreach ($teams as $team) {
-            $captain = $userRepository->find(4);
-            $captains[$team->getId()] = $captain;
+            $captain = $userRepository->find($team->getCaptainId());
+            $captains[$team->getId()] = $captain->getName();
         }
         $this->app->render('admin/listTeam.html', [
             'teams' => $teams,
