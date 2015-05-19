@@ -37,6 +37,7 @@ class Team implements \Serializable
      */
     public function getPlayers()
     {
+        return $this->players;
     }
 
     public function addPlayers(User $user)
