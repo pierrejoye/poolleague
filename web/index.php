@@ -93,6 +93,7 @@ $app->get('/admin/team/add', 'Pool\Controller\AdminTeamController:addFormAction'
 $app->post('/admin/team/add', 'Pool\Controller\AdminTeamController:addAction');
 $app->get('/team/:id/player/list', 'Pool\Controller\TeamController:playerList');
 $app->get('/team/:id/player/add', 'Pool\Controller\TeamController:playerAddForm');
+$app->post('/team/:id/player/add', 'Pool\Controller\TeamController:playerAdd');
 
 $app->get('/admin/team/edit/:id', 'Pool\Controller\AdminTeamController:editFormAction');
 $app->post('/admin/team/edit/:id', 'Pool\Controller\AdminTeamController:updateAction');
