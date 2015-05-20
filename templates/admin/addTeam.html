@@ -1,0 +1,38 @@
+{% extends "index.html" %}
+{% set title = 'BKK Pool League: Login' %}
+
+{% block content %}
+<a href="/admin/team/list">return to the list</a>
+<form id="addform-form" action="{% if mode == "edit" %}/admin/team/edit/{{ id }}{% else %}/admin/team/add{% endif %} " method="POST"  autocomplete="off">
+	<div class="row">
+		<div class="col-lg-12">
+		<h1>Add a Team</h1>
+		</div>
+	</div>
+	<div class="row">
+		<div class="row">
+			<div class="col-lg-12 search-form">
+			<label for="name">Name</label> <input type="text" id="name" name="name" value="{{ name }}">
+			</div>
+			<div class="col-lg-12 search-form">
+				<label for="captain">Captain</label>: 
+				<select id="captain" name="captain">
+					{% for captainId, captainName in selectCaptain %}
+					<option value="{{ captainId }}" {% if captainId == captain %} selected="selected"{% endif %} >{{captainName}}</option>
+					{% endfor %}
+				</select>
+			</div>
+			<div class="col-lg-12 search-form">
+			{% if mode != "edit" %}
+				<input type="submit" id="submit" name="add-team" value="Add team">
+			{% else %}
+				<input type="submit" id="submit" name="edit-team" value="Update team">
+			{% endif%}
+			</div>
+		</div>
+	</div>
+	<input type="hidden" name="h" value="{{ h }}">
+	<input type="hidden" name="id" value="{{ id }}">
+</form>
+<a href="/admin/team/list">return to the list</a>
+{% endblock %}
