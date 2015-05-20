@@ -1,0 +1,31 @@
+{% extends "index.html" %}
+
+{% set title = 'BKK Pool League' %}
+
+{% block content %}
+<a href="/league/add">add a league</a>
+<div class="table-responsive">
+<table summary="Leagues" class="table table-bordered table-hover">
+	<caption class="text-center">Leagues</caption>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Action</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for league in leagues %}
+		<tr>
+			<td>
+                <a href="/league/edit/{{ league.getId() }}">{{ league|escape }}</a>
+            </td>
+			<td>
+                <a href="/league/edit/{{ league.getId() }}">edit</a>
+            </td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+</div>
+<a href="/league/add">add a league</a>
+{% endblock %}

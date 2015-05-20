@@ -58,6 +58,7 @@ class AdminTeamController extends ControllerAbstract
         if (!$selectCaptain) {
             $this->app->flash('error', 'No captain available');
             $this->redirect('/admin/team/list');
+
             return;
         }
         $data = ['h' => $this->getHash()];

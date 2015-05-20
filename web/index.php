@@ -4,6 +4,7 @@ use Slim\Helper\Set;
 use Pool\Application;
 use Pool\Entity\UserRepository;
 use Pool\Entity\TeamRepository;
+use Pool\Entity\LeagueRepository;
 
 function check_or_create_json_dir(Application $app)
 {
@@ -62,6 +63,15 @@ $app->container->singleton(
     }
 );
 
+// League repository
+$app->container->singleton(
+    'league.repository',
+    function (Set $container) {
+        return new LeagueRepository($container->get('redis.client'));
+    }
+);
+
+
 // Default
 $app->get('/', 'Pool\Controller\DefaultController:indexAction');
 
@@ -77,7 +87,6 @@ $app->getSecured('/logout', 'Pool\Controller\AuthController:logoutAction');
 // Admin
 
 // User
-if (1) {
 $app->getSecured('/admin/user/list', 'Pool\Controller\AdminUserController:listAction');
 
 $app->getSecured('/admin/user/add', 'Pool\Controller\AdminUserController:addUserFormAction');
@@ -86,16 +95,7 @@ $app->postSecured('/admin/user/add', 'Pool\Controller\AdminUserController:addUse
 
 $app->getSecured('/admin/user/edit/:id', 'Pool\Controller\AdminUserController:editFormAction');
 $app->postSecured('/admin/user/edit/:id', 'Pool\Controller\AdminUserController:updateAction');
-} else {
-$app->get('/admin/user/list', 'Pool\Controller\AdminUserController:listAction');
 
-$app->get('/admin/user/add', 'Pool\Controller\AdminUserController:addUserFormAction');
-$app->post('/admin/user/add', 'Pool\Controller\AdminUserController:addUserAction');
-
-$app->get('/admin/user/edit/:id', 'Pool\Controller\AdminUserController:editFormAction');
-$app->post('/admin/user/edit/:id', 'Pool\Controller\AdminUserController:updateAction');
-
-}
 $app->getSecured('/admin/team/list', 'Pool\Controller\AdminTeamController:listAction');
 
 // Team
@@ -109,5 +109,15 @@ $app->postSecured('/team/:id/player/add', 'Pool\Controller\TeamController:player
 
 $app->getSecured('/admin/team/edit/:id', 'Pool\Controller\AdminTeamController:editFormAction');
 $app->postSecured('/admin/team/edit/:id', 'Pool\Controller\AdminTeamController:updateAction');
+
+
+// League 
+$app->getSecured('/league/list', 'Pool\Controller\AdminLeagueController:listAction');
+
+$app->getSecured('/league/add', 'Pool\Controller\AdminLeagueController:addFormAction');
+$app->postSecured('/league/add', 'Pool\Controller\AdminLeagueController:addAction');
+
+$app->getSecured('/league/edit/:id', 'Pool\Controller\AdminLeagueController:editFormAction');
+$app->postSecured('/league/edit/:id', 'Pool\Controller\AdminLeagueController:editAction');
 
 $app->run();
