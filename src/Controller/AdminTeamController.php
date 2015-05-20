@@ -36,12 +36,6 @@ class AdminTeamController extends ControllerAbstract
                 $selectCaptain[$user->getId()] = $user->getName();
             }
         }
-        if (count($selectCaptain) == 0) {
-            $this->app->flash('error', 'No captain available');
-            $this->app->redirect('/admin/team/list');
-
-            return;
-        }
 
         return  $selectCaptain;
     }
@@ -64,7 +58,6 @@ class AdminTeamController extends ControllerAbstract
         if (!$selectCaptain) {
             $this->app->flash('error', 'No captain available');
             $this->redirect('/admin/team/list');
-
             return;
         }
         $data = ['h' => $this->getHash()];
@@ -112,7 +105,7 @@ class AdminTeamController extends ControllerAbstract
         $userRepository = $this->app->container->get('user.repository');
         $captain = $userRepository->find($captain);
         if (!$captain) {
-            $msg[] = 'Cannot find this user to use as captain';
+            $msg[] = 'Cannot find this user (as captain)';
         }
 
         if (count($msg)) {
