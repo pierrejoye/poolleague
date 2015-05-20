@@ -19,7 +19,7 @@
 		<tr>
 			<td><a href="/admin/team/edit/{{ team.getId() }}">{{ team.getName()|escape }}</a></td>
 			<td>{{ captains[team.getid()]|escape }}</td>
-			<td><a href="/team/{{ team.getId() }}/player/list">Members</a></td>
+			<td><a href="/team/{{ team.getId() }}/player/list">See/edit players</a></td>
 		</tr>
 		{% endfor %}
 	</tbody>

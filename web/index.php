@@ -77,6 +77,7 @@ $app->getSecured('/logout', 'Pool\Controller\AuthController:logoutAction');
 // Admin
 
 // User
+if (1) {
 $app->getSecured('/admin/user/list', 'Pool\Controller\AdminUserController:listAction');
 
 $app->getSecured('/admin/user/add', 'Pool\Controller\AdminUserController:addUserFormAction');
@@ -84,7 +85,16 @@ $app->postSecured('/admin/user/add', 'Pool\Controller\AdminUserController:addUse
 
 $app->getSecured('/admin/user/edit/:id', 'Pool\Controller\AdminUserController:editFormAction');
 $app->postSecured('/admin/user/edit/:id', 'Pool\Controller\AdminUserController:updateAction');
+} else {
+$app->get('/admin/user/list', 'Pool\Controller\AdminUserController:listAction');
 
+$app->get('/admin/user/add', 'Pool\Controller\AdminUserController:addUserFormAction');
+$app->post('/admin/user/add', 'Pool\Controller\AdminUserController:addUserAction');
+
+$app->get('/admin/user/edit/:id', 'Pool\Controller\AdminUserController:editFormAction');
+$app->post('/admin/user/edit/:id', 'Pool\Controller\AdminUserController:updateAction');
+
+}
 $app->getSecured('/admin/team/list', 'Pool\Controller\AdminTeamController:listAction');
 
 // Team

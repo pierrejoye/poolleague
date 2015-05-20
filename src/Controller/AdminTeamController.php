@@ -166,10 +166,18 @@ class AdminTeamController extends ControllerAbstract
         $teamRepository = $this->app->container->get('team.repository');
         $userRepository = $this->app->container->get('user.repository');
         $teams = $teamRepository->getAll();
-        $captains = [];
-        foreach ($teams as $team) {
-            $captain = $userRepository->find($team->getCaptainId());
-            $captains[$team->getId()] = $captain->getName();
+        if (!$teams) {
+            $teams = [];
+        } else {
+            $captains = [];
+            foreach ($teams as $team) {
+                $captain = $userRepository->find($team->getCaptainId());
+                if ($captain) {
+                    $captains[$team->getId()] = $captain->getName();
+                } else {
+                    $captains[$team->getId()] = '';
+                }
+            }
         }
         $this->app->render('admin/listTeam.html', [
             'teams' => $teams,

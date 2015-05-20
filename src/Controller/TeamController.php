@@ -29,11 +29,18 @@ class TeamController extends ControllerAbstract
     public function PlayerAddForm($teamId)
     {
         $team = $this->getTeam($teamId);
-        $players = $team->getPlayers();
-        if (count($players) < 1) {
-            $players = array_fill(0, 20, '');
+        $users = $team->getPlayers();
+
+        $userRepository = $this->app->container->get('user.repository');
+        foreach ($users as $playerId) {
+            $players[] = $userRepository->find($playerId);
         }
-        $players = array_merge($players, array_fill(0, 20 - count($players), ''));
+
+        $toAdd = 20 - count($users);
+        for ($i = 0; $i < $toAdd; $i++) {
+            $players[] = '';
+        }
+
         $this->app->render('team/playerEdit.html', [
             'team' => $team,
             'players' => $players,
@@ -47,7 +54,7 @@ class TeamController extends ControllerAbstract
      */
     public function PlayerAdd($teamId)
     {
-        $this->getHash();
+        //$this->getHash();
         $team = $this->getTeam($teamId);
         if ($this->app->request()->post('id') != $teamId) {
             $this->flash('error', 'invalid team Id');
@@ -76,6 +83,10 @@ class TeamController extends ControllerAbstract
             }
         }
 
+        if (count($players) < 1) {
+            $msg[] = 'No user to add';
+        }
+
         if (count($msg) > 0) {
             $this->app->flash('error', implode($msg, '<br/>'));
             die(implode($msg, '<br/>'));
@@ -85,17 +96,24 @@ class TeamController extends ControllerAbstract
         $userRepository = $this->app->container->get('user.repository');
         $users = [];
         foreach ($players as $player) {
-            $user = new User();
-            $user->setEmail($player['email']);
-            $user->setRole('player');
-            $userRepository->persist($user);
+            $existingUser = $userRepository->findByEmail($email);
+            if ($existingUser) {
+                $user = $existingUser;
+            } else {
+                $user = new User();
+                $user->setName($player['name']);
+                $user->setEmail($player['email']);
+                $user->setRole('player');
+                $userRepository->persist($user);
+            }
             $users[] = $user;
         }
 
         $team->setPlayers($users);
+        print_r($users);
         $teamRepository = $this->app->container->get('team.repository');
         $teamRepository->persist($team);
-        $this->app->redirect('/team/'.$team->getId().'/player/list');
+        //$this->app->redirect('/team/'.$team->getId().'/player/list');
     }
 
     /**
@@ -104,8 +122,15 @@ class TeamController extends ControllerAbstract
     public function playerList($teamId)
     {
         $team = $this->getTeam($teamId);
+        $playersId = $team->getPlayers();
+        $userRepository = $this->app->container->get('user.repository');
+        foreach ($playersId as $playerId) {
+            $players[] = $userRepository->find($playerId);
+        }
+
         $this->app->render('team/playerList.html', [
         'team' => $team,
+        'players' => $players,
         'user' => $this->app->user(),
         ]);
     }
