@@ -54,17 +54,17 @@ class TeamController extends ControllerAbstract
      */
     public function PlayerAdd($teamId)
     {
-        //$this->getHash();
+        $this->getHash();
         $team = $this->getTeam($teamId);
         if ($this->app->request()->post('id') != $teamId) {
             $this->flash('error', 'invalid team Id');
             $this->redirect('/admin/team/list');
-
             return;
         }
 
         $namesPost = $this->app->request()->post('names');
         $emailsPost = $this->app->request()->post('emails');
+        $idPost = $this->app->request()->post('id');
 
         $msg = [];
         foreach ($namesPost as $k => $name) {
@@ -78,6 +78,7 @@ class TeamController extends ControllerAbstract
                     $players[] = [
                         'name' => $name,
                         'email' => $emailsPost[$k],
+                        'id'    => $idPost[$K]
                     ];
                 }
             }
@@ -89,7 +90,6 @@ class TeamController extends ControllerAbstract
 
         if (count($msg) > 0) {
             $this->app->flash('error', implode($msg, '<br/>'));
-            die(implode($msg, '<br/>'));
             $this->app->redirect('/team/'.$team->getId().'/list');
         }
 
@@ -108,12 +108,10 @@ class TeamController extends ControllerAbstract
             }
             $users[] = $user;
         }
-
         $team->setPlayers($users);
-        print_r($users);
         $teamRepository = $this->app->container->get('team.repository');
         $teamRepository->persist($team);
-        //$this->app->redirect('/team/'.$team->getId().'/player/list');
+        $this->app->redirect('/team/'.$team->getId().'/player/list');
     }
 
     /**

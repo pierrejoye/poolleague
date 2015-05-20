@@ -31,8 +31,7 @@ class AdminTeamController extends ControllerAbstract
         $team = $teamRepository->find($id);
         if (!$team) {
             $this->app->flash('error', 'Cannot find this team');
-            $this->redirect('/admin/team/list');
-
+            $this->app->redirect('/admin/team/list');
             return;
         }
 
