@@ -1,0 +1,50 @@
+{% extends "index.html" %}
+{% set title = 'BKK Pool League: team players list' %}
+
+{% block content %}
+<a href="/team/{{ team.getId() }}/list">return to the list</a>
+<form id="addform-form" action="/team/{{ team.getId() }}/player/add" method="POST"  autocomplete="off">
+	<div class="row">
+		<div class="col-lg-12">
+		<h1>{{ team.getName|escape}} Players</h1>
+		</div>
+	</div>
+    <input type="submit" value="update-players" name="Udate players">
+    <div class="table-responsive">
+        <div class="table">
+        <table summary="Teams list" class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tbody>
+                {% for player in players %}
+                <tr>
+{% if player != '' %}
+                    <td>
+                        Name:<input type="text" id="name" name="names[{{i}}]" value="{{ player|escape }}" size="50%">
+                        Email:<input type="email" id="email" name="emails[{{i}}]" value="{{ player.getEmail()|escape() }}" size="50%">
+                        <input type="hidden" id="id" name="id[{{i}}]" value="{{ player.getId() }}" size="50%">
+                    </td>
+{% else %}
+                    <td>
+                        Name:<input type="text" id="name" name="names[{{i}}]" value="" size="50%">
+                        Email;<input type="email" id="email" name="emails[{{i}}]" value="" size="50%">
+                        <input type="hidden" id="id" name="id[{{i}}]" value="" size="50%">
+                    </td>
+{% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+    <input type="submit" value="update-players" name="Udate players">
+	<input type="hidden" name="h" value="{{ h }}">
+	<input type="hidden" name="id" value="{{ team.getId() }}">
+</form>
+<a href="/team/{{ team.getId() }}/list">return to the list</a>
+{% endblock %}

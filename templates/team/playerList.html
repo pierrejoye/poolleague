@@ -1,0 +1,25 @@
+{% extends "index.html" %}
+
+{% set title = 'BKK Pool League' %}
+
+{% block content %}
+<a href="/team/{{ team.getId() }}/player/add">edit players</a>
+<div class="table-responsive">
+<table summary="{{ team.getName()|escape }} Players list" class="table table-bordered table-hover">
+	<caption class="text-center">{{ team.getName()|escape}} Players list</caption>
+	<thead>
+		<tr>
+			<th>Name</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for player in players %}
+		<tr>
+			<td>{{ player|escape }}</td>
+        </tr>
+		{% endfor %}
+	</tbody>
+</table>
+</div>
+<a href="/team/{{ team.getId() }}/player/add">edit players</a>
+{% endblock %}
