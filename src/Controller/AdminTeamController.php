@@ -6,20 +6,44 @@ use Pool\Entity\User;
 use Pool\Entity\Team;
 
 /**
- * Class AuthController.
+ * Class AdminTeamController.
  */
 class AdminTeamController extends ControllerAbstract
 {
-    protected function getCaptainList()
+    protected function isAlreadyCaptain($id)
+    {
+        $teamRepository = $this->app->container->get('team.repository');
+        $teams = $teamRepository->getAll();
+        foreach ($teams as $team) {
+            if ($team->getCaptainId() == $id) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected function getCaptainList($id = false)
     {
         $userRepository = $this->app->container->get('user.repository');
         $users = $userRepository->getAll();
         $selectCaptain = [];
         foreach ($users as $user) {
-            $selectCaptain[$user->getId()] = $user->getName();
+            if ($user->isCaptain()) {
+                if (!$id && $this->isAlreadyCaptain($user->getId())) {
+                    continue;
+                }
+                $selectCaptain[$user->getId()] = $user->getName();
+            }
+        }
+        if (count($selectCaptain) == 0) {
+            $this->app->flash('error', 'No captain available');
+            $this->app->redirect('/admin/team/list');
+
+            return;
         }
 
-        return $selectCaptain;
+        return  $selectCaptain;
     }
 
     /**
@@ -36,7 +60,13 @@ class AdminTeamController extends ControllerAbstract
             return;
         }
 
-        $selectCaptain = $this->getCaptainList();
+        $selectCaptain = $this->getCaptainList($id);
+        if (!$selectCaptain) {
+            $this->app->flash('error', 'No captain available');
+            $this->redirect('/admin/team/list');
+
+            return;
+        }
         $data = ['h' => $this->getHash()];
         $data['selectCaptain'] = $selectCaptain;
         $data['id'] = $team->getId();
@@ -115,8 +145,10 @@ class AdminTeamController extends ControllerAbstract
         if ($this->app->request()->get('valid')) {
             $data = array_merge($data, $_SESSION['form-data']);
         }
+
+        $selectCaptain = $this->getCaptainList($id);
         $data['mode'] = 'add';
-        $data['selectCaptain'] = $this->getCaptainList();
+        $data['selectCaptain'] = $selectCaptain;
         $this->app->render('admin/addTeam.html', $data);
     }
 
