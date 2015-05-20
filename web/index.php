@@ -81,6 +81,7 @@ if (1) {
 $app->getSecured('/admin/user/list', 'Pool\Controller\AdminUserController:listAction');
 
 $app->getSecured('/admin/user/add', 'Pool\Controller\AdminUserController:addUserFormAction');
+$app->getSecured('/admin/user/del/:id', 'Pool\Controller\AdminUserController:removeUserAction');
 $app->postSecured('/admin/user/add', 'Pool\Controller\AdminUserController:addUserAction');
 
 $app->getSecured('/admin/user/edit/:id', 'Pool\Controller\AdminUserController:editFormAction');

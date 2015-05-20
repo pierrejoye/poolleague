@@ -179,6 +179,36 @@ class AdminUserController extends ControllerAbstract
     /**
      * GET /admin/user/list/.
      */
+    public function removeUserAction($id)
+    {
+        $userRepository = $this->app->container->get('user.repository');
+        $user = $userRepository->find($id);
+        if (!$user) {
+            $this->app->flash('error', 'cannot find this user');
+            $this->app->redirect('/admin/user/list');
+
+            return;
+        }
+
+        $teamRepository = $this->app->container->get('team.repository');
+        $teams = $teamRepository->getAll();
+        foreach ($teams as $team) {
+            $players = $team->getPlayers();
+            if (in_array($id, $players)) {
+                $k = array_search($id, $players);
+                unset($players[$k]);
+                $team->setPlayersFromId($players);
+                $teamRepository->persist($team);
+            }
+        }
+
+        $userRepository->remove($user);
+        $this->app->redirect('/admin/user/list');
+    }
+
+    /**
+     * GET /admin/user/list/.
+     */
     public function listAction()
     {
         $userRepository = $this->app->container->get('user.repository');

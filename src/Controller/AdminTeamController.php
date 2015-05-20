@@ -32,6 +32,7 @@ class AdminTeamController extends ControllerAbstract
         if (!$team) {
             $this->app->flash('error', 'Cannot find this team');
             $this->app->redirect('/admin/team/list');
+
             return;
         }
 

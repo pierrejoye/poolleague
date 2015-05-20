@@ -59,6 +59,7 @@ class TeamController extends ControllerAbstract
         if ($this->app->request()->post('id') != $teamId) {
             $this->flash('error', 'invalid team Id');
             $this->redirect('/admin/team/list');
+
             return;
         }
 
@@ -78,7 +79,7 @@ class TeamController extends ControllerAbstract
                     $players[] = [
                         'name' => $name,
                         'email' => $emailsPost[$k],
-                        'id'    => $idPost[$K]
+                        'id' => $idPost[$K],
                     ];
                 }
             }

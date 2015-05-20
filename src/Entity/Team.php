@@ -42,9 +42,19 @@ class Team implements \Serializable
 
     public function setPlayers($players)
     {
-		$this->players = [];
+        $this->players = [];
         foreach ($players as $player) {
             $this->players[] = $player->getId();
+        }
+
+        return $this;
+    }
+
+    public function setPlayersFromId($players)
+    {
+        $this->players = [];
+        foreach ($players as $playerId) {
+            $this->players[] = $playerId;
         }
 
         return $this;
