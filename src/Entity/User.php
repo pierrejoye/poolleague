@@ -141,6 +141,11 @@ class User implements \Serializable
         return $this->role == 'admin' ? true : false;
     }
 
+    public function isPlayer()
+    {
+        return $this->role == 'player' ? true : false;
+    }
+
     public function getRole()
     {
         return $this->role;

@@ -149,6 +149,7 @@ class AdminTeamController extends ControllerAbstract
                 ];
             $this->app->flash('error', implode("\n", $msg));
             $this->app->redirect('/admin/team/add?valid=1');
+
             return;
         }
         $team = new Team();

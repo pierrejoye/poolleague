@@ -29,10 +29,11 @@ class Application extends Slim
         parent::__construct($userSettings);
 
         session_start();
-
         $this->authentication = function () {
             if ($this->user() === null) {
                 $this->redirect('/login');
+
+                return;
             }
         };
     }

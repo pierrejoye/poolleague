@@ -66,35 +66,37 @@ $app->container->singleton(
 $app->get('/', 'Pool\Controller\DefaultController:indexAction');
 
 // User
-$app->get('/profile', 'Pool\Controller\UserController:profileAction');
+$app->getSecured('/profile', 'Pool\Controller\UserController:profileAction');
 
 
 // Authorization
 $app->get('/login', 'Pool\Controller\AuthController:loginFormAction');
 $app->post('/login', 'Pool\Controller\AuthController:loginAction');
-$app->get('/logout', 'Pool\Controller\AuthController:logoutAction');
+$app->getSecured('/logout', 'Pool\Controller\AuthController:logoutAction');
 
 // Admin
 
 // User
-$app->get('/admin/user/list', 'Pool\Controller\AdminUserController:listAction');
+$app->getSecured('/admin/user/list', 'Pool\Controller\AdminUserController:listAction');
 
-$app->get('/admin/user/add', 'Pool\Controller\AdminUserController:addUserFormAction');
-$app->post('/admin/user/add', 'Pool\Controller\AdminUserController:addUserAction');
+$app->getSecured('/admin/user/add', 'Pool\Controller\AdminUserController:addUserFormAction');
+$app->postSecured('/admin/user/add', 'Pool\Controller\AdminUserController:addUserAction');
 
-$app->get('/admin/user/edit/:id', 'Pool\Controller\AdminUserController:editFormAction');
-$app->post('/admin/user/edit/:id', 'Pool\Controller\AdminUserController:updateAction');
+$app->getSecured('/admin/user/edit/:id', 'Pool\Controller\AdminUserController:editFormAction');
+$app->postSecured('/admin/user/edit/:id', 'Pool\Controller\AdminUserController:updateAction');
 
-$app->get('/admin/team/list', 'Pool\Controller\AdminTeamController:listAction');
+$app->getSecured('/admin/team/list', 'Pool\Controller\AdminTeamController:listAction');
 
 // Team
-$app->get('/admin/team/add', 'Pool\Controller\AdminTeamController:addFormAction');
-$app->post('/admin/team/add', 'Pool\Controller\AdminTeamController:addAction');
-$app->get('/team/:id/player/list', 'Pool\Controller\TeamController:playerList');
-$app->get('/team/:id/player/add', 'Pool\Controller\TeamController:playerAddForm');
-$app->post('/team/:id/player/add', 'Pool\Controller\TeamController:playerAdd');
+$app->getSecured('/team/:id/player/list', 'Pool\Controller\TeamController:playerList');
 
-$app->get('/admin/team/edit/:id', 'Pool\Controller\AdminTeamController:editFormAction');
-$app->post('/admin/team/edit/:id', 'Pool\Controller\AdminTeamController:updateAction');
+$app->getSecured('/admin/team/add', 'Pool\Controller\AdminTeamController:addFormAction');
+$app->postSecured('/admin/team/add', 'Pool\Controller\AdminTeamController:addAction');
+
+$app->getSecured('/team/:id/player/add', 'Pool\Controller\TeamController:playerAddForm');
+$app->postSecured('/team/:id/player/add', 'Pool\Controller\TeamController:playerAdd');
+
+$app->getSecured('/admin/team/edit/:id', 'Pool\Controller\AdminTeamController:editFormAction');
+$app->postSecured('/admin/team/edit/:id', 'Pool\Controller\AdminTeamController:updateAction');
 
 $app->run();
