@@ -14,6 +14,9 @@ class AdminTeamController extends ControllerAbstract
     {
         $teamRepository = $this->app->container->get('team.repository');
         $teams = $teamRepository->getAll();
+        if (!$teams) {
+            return false;
+        }
         foreach ($teams as $team) {
             if ($team->getCaptainId() == $id) {
                 return true;

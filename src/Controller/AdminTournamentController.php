@@ -17,8 +17,10 @@ class AdminTournamentController extends ControllerAbstract
         if (!$league) {
             $this->app->flash('error', 'Cannot find this league');
             $this->app->redirect('/admin/league/'.$leagueId.'/list');
+
             return;
         }
+
         return $league;
     }
 
@@ -32,6 +34,7 @@ class AdminTournamentController extends ControllerAbstract
         if (!$tournament) {
             $this->app->flash('error', 'Cannot find this tournament');
             $this->app->redirect('/admin/league/'.$league->getId().'/list');
+
             return;
         }
 
@@ -53,6 +56,7 @@ class AdminTournamentController extends ControllerAbstract
         if (!$league) {
             $this->app->flash('error', 'Cannot find this league');
             $this->app->redirect('/admin/league/'.$league->getId().'/list');
+
             return;
         }
 
@@ -61,6 +65,7 @@ class AdminTournamentController extends ControllerAbstract
         if (empty($name)) {
             $this->app->flash('error', 'Invalid name');
             $this->app->redirect('/admin/league/'.$leagueId.'/tournament/edit/'.$tournamentId);
+
             return;
         }
         $league->setName($name);
@@ -76,9 +81,9 @@ class AdminTournamentController extends ControllerAbstract
         $league = $this->findLeagueById($leagueId);
         $this->app->render('admin/addTournament.html',
             [
-                'mode'   => 'add',
+                'mode' => 'add',
                 'league' => $league,
-                'h'      => $this->getHash(),
+                'h' => $this->getHash(),
             ]
         );
     }
@@ -106,7 +111,7 @@ class AdminTournamentController extends ControllerAbstract
             $this->app->redirect('/admin/league/'.$league->getId().'/tournament/add');
         }
 
-        $tournament = new Tournament;
+        $tournament = new Tournament();
         $tournament->setDate($tournamentDate);
         $tournament->setName($name);
 
@@ -125,7 +130,7 @@ class AdminTournamentController extends ControllerAbstract
 
         $this->app->render('admin/showLeague.html', [
             'league' => $league,
-            'tournaments' => $tournaments
+            'tournaments' => $tournaments,
         ]);
     }
 

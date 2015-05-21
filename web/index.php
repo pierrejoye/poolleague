@@ -139,4 +139,8 @@ $app->getSecured('/admin/tournament/edit/:tournamentid', 'Pool\Controller\AdminT
 $app->postSecured('/admin/tournament/edit/:tournamentid', 'Pool\Controller\AdminTournamentController:editAction');
 
 
+$app->getSecured('/admin/league/:id/team/edit', 'Pool\Controller\AdminLeagueController:editTeamFormAction');
+$app->postSecured('/admin/league/:id/team/edit', 'Pool\Controller\AdminLeagueController:editTeamAction');
+
+
 $app->run();

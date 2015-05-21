@@ -100,8 +100,17 @@ class AdminLeagueController extends ControllerAbstract
     {
         $leagueRepository = $this->app->container->get('league.repository');
         $league = $leagueRepository->find($id);
+        $teamsId = $league->getTeams();
+
+        $teamRepository = $this->app->container->get('team.repository');
+        foreach ($teamsId as $teamId) {
+            $toAdd = $teamRepository->find($teamId);
+            $teams[] = $toAdd;
+        }
+
         $this->app->render('admin/showLeague.html', [
             'league' => $league,
+            'teams' => $teams,
         ]);
     }
 
@@ -115,6 +124,87 @@ class AdminLeagueController extends ControllerAbstract
         $this->app->render('admin/listLeague.html', [
             'leagues' => $leagues,
         ]);
+    }
+
+    /**
+     * GET /admin/league/:id/team/edit.
+     */
+    public function editTeamFormAction($leagueId)
+    {
+        $this->getHash();
+
+        $leagueRepository = $this->app->container->get('league.repository');
+        $league = $leagueRepository->find($leagueId);
+        if (!$league) {
+            $this->app->flash('error', 'Cannot find this league');
+            $this->app->redirect('/admin/league/list');
+
+            return;
+        }
+
+        $teamsLeague = $league->getTeams();
+        $teamRepository = $this->app->container->get('team.repository');
+        $teamsAll = $teamRepository->getAll();
+
+        if (!is_array($teamsAll)) {
+            $this->app->flash('error', 'Please first create teams');
+            $this->app->redirect('/admin/league/list');
+
+            return;
+        }
+        foreach ($teamsAll as $team) {
+            $listSelect[$team->getId()] = [
+                'name' => $team->getName(),
+                'active' => false,
+            ];
+        }
+
+        foreach ($teamsLeague as $team) {
+            $listSelect[$team->id]['active'] = true;
+        }
+
+        $leagueTeams = $league->getTeams();
+
+        $this->app->render('admin/leagueAddTeam.html', [
+            'h' => $this->getHash(),
+            'league' => $league,
+            'listSelectTeams' => $listSelect,
+        ]);
+    }
+
+    /**
+     * POST /admin/league/:id/team/edit.
+     */
+    public function editTeamAction($leagueId)
+    {
+        $this->getHash();
+
+        $leagueRepository = $this->app->container->get('league.repository');
+        $league = $leagueRepository->find($leagueId);
+        if (!$league) {
+            $this->app->flash('error', 'Cannot find this league');
+            $this->app->redirect('/admin/league/list');
+
+            return;
+        }
+        $teams = $this->app->request()->post('teams');
+
+        if (!is_array($teams) || count($teams) < 2) {
+            $this->app->flash('error', 'At least two teams must be selected (or created)');
+            $this->app->redirect('/admin/league/list');
+
+            return;
+        }
+        $teamsElem = count($teams);
+
+        for ($i = 0; $i < $teamsElem; $i++) {
+            $teams[$i] = (int) $teams[$i];
+        }
+
+        $league->setTeamsFromId($teams);
+        $leagueRepository->persist($league);
+
+        $this->app->redirect('/admin/league/'.$league->getId().'/show');
     }
 }
 

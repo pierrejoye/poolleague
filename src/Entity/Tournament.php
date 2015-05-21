@@ -42,7 +42,6 @@ class Tournament
         return $this;
     }
 
-
     /**
      * @param string
      *
@@ -68,7 +67,7 @@ class Tournament
      */
     public function serialize2()
     {
-//        return json_encode(get_object_vars($this));
+        //        return json_encode(get_object_vars($this));
         return serialize(get_object_vars($this));
     }
 
