@@ -36,7 +36,6 @@ class Application extends Slim
                 return;
             }
         };
-
     }
 
     /**
@@ -59,14 +58,18 @@ class Application extends Slim
 
             $this->innerCache['user'] = $user;
         }
-		$route = $this->router()->getCurrentRoute();
-		if ($route) {
-			$routePattern = $route->getPattern();
-			if (substr($routePattern,0,6)=='/admin') {
-				$this->flash('error', 'Not allowed to access this section, brought back to home');
-				$this->redirectIf(!$user->isAdmin(), '/');
-			}
-		}
+        $route = $this->router()->getCurrentRoute();
+        if ($route) {
+            $routePattern = $route->getPattern();
+            if (is_null($user)) {
+                return;
+            }
+            if (substr($routePattern, 0, 6) == '/admin' && !$user->isAdmin()) {
+                $this->flash('error', 'Not allowed to access this section, brought back to home');
+                $this->redirect('/');
+            }
+        }
+
         return $this->innerCache['user'];
     }
 
