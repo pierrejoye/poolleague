@@ -63,7 +63,8 @@ class Application extends Slim
 		if ($route) {
 			$routePattern = $route->getPattern();
 			if (substr($routePattern,0,6)=='/admin') {
-				//echo "admin required";
+				$this->flash('error', 'Not allowed to access this section, brought back to home');
+				$this->redirectIf(!$user->isAdmin(), '/');
 			}
 		}
         return $this->innerCache['user'];
