@@ -3,7 +3,7 @@
 {% set title = 'BKK Pool League' %}
 
 {% block content %}
-<a href="/league/add">add a league</a>
+<a href="/admin/league/add">add a league</a>
 <div class="table-responsive">
 <table summary="Leagues" class="table table-bordered table-hover">
 	<caption class="text-center">Leagues</caption>
@@ -17,15 +17,16 @@
 		{% for league in leagues %}
 		<tr>
 			<td>
-                <a href="/league/edit/{{ league.getId() }}">{{ league|escape }}</a>
+                <a href="/admin/league/{{ league.getId() }}/show">{{ league|escape }}</a>
             </td>
 			<td>
-                <a href="/league/edit/{{ league.getId() }}">edit</a>
+                <a href="/admin/league/{{ league.getId() }}/edit">edit</a>
+                <a href="/admin/league/{{ league.getId() }}/show">show</a>
             </td>
 		</tr>
 		{% endfor %}
 	</tbody>
 </table>
 </div>
-<a href="/league/add">add a league</a>
+<a href="/admin/league/add">add a league</a>
 {% endblock %}

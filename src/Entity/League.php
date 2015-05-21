@@ -28,6 +28,12 @@ class League implements \Serializable
     protected $teams;
 
     /**
+     * @var array
+     */
+    protected $tournaments;
+
+
+    /**
      * @return array
      */
     public function getTeams()
@@ -52,6 +58,24 @@ class League implements \Serializable
             $this->teams[] = $teamId;
         }
 
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTournaments()
+    {
+        return $this->tournaments;
+    }
+
+    public function addTournament(Tournament $tournament)
+    {
+        if (!is_array($this->tournaments)) {
+            $this->tournaments = [];
+            
+        }
+        $this->tournaments[$tournament->getDate()] = $tournament;
         return $this;
     }
 
@@ -120,7 +144,7 @@ class League implements \Serializable
      */
     public function serialize()
     {
-        return json_encode(get_object_vars($this));
+        return serialize(get_object_vars($this));
     }
 
     /**
@@ -128,7 +152,8 @@ class League implements \Serializable
      */
     public function unserialize($serialized)
     {
-        $data = json_decode($serialized, true);
+        
+        $data = unserialize($serialized);
 
         $fields = get_object_vars($this);
         foreach ($data as $key => $value) {

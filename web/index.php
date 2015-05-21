@@ -5,6 +5,7 @@ use Pool\Application;
 use Pool\Entity\UserRepository;
 use Pool\Entity\TeamRepository;
 use Pool\Entity\LeagueRepository;
+use Pool\Entity\TournamentRepository;
 
 function check_or_create_json_dir(Application $app)
 {
@@ -72,6 +73,15 @@ $app->container->singleton(
 );
 
 
+// Tournament repository
+$app->container->singleton(
+    'tournament.repository',
+    function (Set $container) {
+        return new TournamentRepository($container->get('redis.client'));
+    }
+);
+
+
 // Default
 $app->get('/', 'Pool\Controller\DefaultController:indexAction');
 
@@ -112,12 +122,21 @@ $app->postSecured('/admin/team/edit/:id', 'Pool\Controller\AdminTeamController:u
 
 
 // League 
-$app->getSecured('/league/list', 'Pool\Controller\AdminLeagueController:listAction');
+$app->get('/admin/league/list', 'Pool\Controller\AdminLeagueController:listAction');
 
-$app->getSecured('/league/add', 'Pool\Controller\AdminLeagueController:addFormAction');
-$app->postSecured('/league/add', 'Pool\Controller\AdminLeagueController:addAction');
+$app->getSecured('/admin/league/:id/show', 'Pool\Controller\AdminLeagueController:showAction');
 
-$app->getSecured('/league/edit/:id', 'Pool\Controller\AdminLeagueController:editFormAction');
-$app->postSecured('/league/edit/:id', 'Pool\Controller\AdminLeagueController:editAction');
+$app->getSecured('/admin/league/add', 'Pool\Controller\AdminLeagueController:addFormAction');
+$app->postSecured('/admin/league/add', 'Pool\Controller\AdminLeagueController:addAction');
+
+$app->getSecured('/admin/league/edit/:id', 'Pool\Controller\AdminLeagueController:editFormAction');
+$app->postSecured('/admin/league/edit/:id', 'Pool\Controller\AdminLeagueController:editAction');
+
+$app->getSecured('/admin/league/:id/tournament/add', 'Pool\Controller\AdminTournamentController:addFormAction');
+$app->postSecured('/admin/league/:id/tournament/add', 'Pool\Controller\AdminTournamentController:addAction');
+
+$app->getSecured('/admin/tournament/edit/:tournamentid', 'Pool\Controller\AdminTournamentController:editFormAction');
+$app->postSecured('/admin/tournament/edit/:tournamentid', 'Pool\Controller\AdminTournamentController:editAction');
+
 
 $app->run();

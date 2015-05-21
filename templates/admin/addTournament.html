@@ -1,0 +1,41 @@
+{% extends "index.html" %}
+{% set useDatePicker = 1 %}
+{% set title = 'BKK Pool League' %}
+
+{% block content %}
+<a href="/admin/league/{{ league.getId() }}/show">return to the list</a>
+<form id="addform-form" action="{% if mode == "edit" %}/admin/tournament/edit/{{ tournament.getId() }}{% else %}/admin/league/{{ league.getId() }}/tournament/add{% endif %} " method="POST" autocomplete="off">
+	<div class="row">
+		<div class="col-lg-12">
+		<h1>Add a tournament for {{ league|escape|upper}}</h1>
+		</div>
+	</div>
+	<div class="row">
+		<div class="row">
+			<div class="col-lg-12 search-form">
+                <label for="name">Name</label> <input type="text" id="name" name="name" value="{{ tournament.getName|escape }}" size="80">
+			</div>
+			<div class="col-lg-12 search-form">
+                <label for="date">Date (dd/mm/yyyy)</label><input type="text" type="text" name="tournamentDate" class="form-control" id="tournamentDate" size="80">
+			</div>
+			<div class="col-lg-12 search-form">
+			{% if mode != "edit" %}
+				<input type="submit" id="submit" name="add-league" value="Add Tournament">
+			{% else %}
+				<input type="submit" id="submit" name="edit-league" value="Update Tournament">
+			{% endif%}
+			</div>
+		</div>
+	</div>
+	<input type="hidden" name="h" value="{{ h }}">
+	<input type="hidden" name="id" value="{{ tournament.getId() }}">
+</form>
+<a href="/admin/league/{{ league.getId() }}/show">return to the list</a>
+<script>
+    $('#tournamentDate').datepicker({
+    weekStart: 1,
+    format: "dd/mm/yyyy",
+    autoclose: true
+});
+</script>
+{% endblock %}

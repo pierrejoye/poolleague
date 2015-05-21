@@ -40,7 +40,7 @@ class AdminLeagueController extends ControllerAbstract
         $league = $leagueRepository->find($leagueId);
         if (!$league) {
             $this->app->flash('error', 'Cannot find this league');
-            $this->app->redirect('/league/list');
+            $this->app->redirect('/admin/league/list');
 
             return;
         }
@@ -55,7 +55,7 @@ class AdminLeagueController extends ControllerAbstract
         }
         $league->setName($name);
         $leagueRepository->persist($league);
-        $this->app->redirect('/league/list');
+        $this->app->redirect('/admin/league/list');
     }
 
     /**
@@ -67,24 +67,18 @@ class AdminLeagueController extends ControllerAbstract
         $name = trim(filter_var($this->app->request()->post('name'), FILTER_SANITIZE_STRING));
         if (empty($name)) {
             $this->app->flash('error', 'Invalid name');
-            $this->app->redirect('/league/add');
+            $this->app->redirect('/admin/league/add');
 
             return;
         }
 
         $leagueRepository = $this->app->container->get('league.repository');
-/*
-        if ($leagueRepository->findByName($name)) {
-            $this->app->flash('error', 'This name already exists');
-            $this->app->redirect('/league/add');
-            return;
-        }
-*/
+
         $league = new League();
         $league->setName($name);
         $leagueRepository->persist($league);
 
-        $this->app->redirect('/league/list');
+        $this->app->redirect('/admin/league/list');
     }
 
     /**
@@ -97,6 +91,18 @@ class AdminLeagueController extends ControllerAbstract
             'h' => $this->getHash(),
         ]
         );
+    }
+
+    /**
+     * GET /admin/user/list/.
+     */
+    public function showAction($id)
+    {
+        $leagueRepository = $this->app->container->get('league.repository');
+        $league = $leagueRepository->find($id);
+        $this->app->render('admin/showLeague.html', [
+            'league' => $league,
+        ]);
     }
 
     /**
