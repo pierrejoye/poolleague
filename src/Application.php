@@ -36,6 +36,7 @@ class Application extends Slim
                 return;
             }
         };
+
     }
 
     /**
@@ -58,7 +59,13 @@ class Application extends Slim
 
             $this->innerCache['user'] = $user;
         }
-
+		$route = $this->router()->getCurrentRoute();
+		if ($route) {
+			$routePattern = $route->getPattern();
+			if (substr($routePattern,0,6)=='/admin') {
+				//echo "admin required";
+			}
+		}
         return $this->innerCache['user'];
     }
 
