@@ -1,0 +1,61 @@
+{% extends "index.html" %}
+{% set title = 'BKK Pool League: Login' %}
+
+{% block content %}
+<a href="http://localhost/admin/league/{{league.getId()|escape}}/show">return to the list</a>
+
+	<div class="row">
+		<div class="col-lg-12">
+		<h1>{{ league|escape|upper}} - {{ tournament|escape }}</h1>
+		</div>
+	</div>
+	<div class="row">
+        <div class="row">
+            <a href="/admin/tournament/{{ tournament.getId() }}/edit" class='btn btn-default btn-lg'>Edit</a>
+            <table summary="{{ league.getName()|escape }} Rounds list" class="table table-bordered table-hover">
+                <caption class="text-center">{{ tournament|escape|upper}}</caption>
+                <thead>
+                    <tr>
+                        <th>Week #</th>
+                        <th>Date</th>
+                        <th>Games (Home vs Visitor)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for nr,round in tournament.getRounds() %}
+                    <tr>
+                        <td>{{ nr+1|escape }}</td>
+                        <td>{{ round.getDate().format('j/n/Y')|escape }}</td>
+                        <td>
+                            <ul>
+                            {% for game in round.getGames() %}
+                            
+                                <li>
+                                    {% if game.getHome()=='' %}
+                                        Bye
+                                    {% else %}
+                                        {{ game.getHome()|escape }}
+                                    {% endif %}
+                                 vs
+                                    {% if game.getVisitor()=='' %}
+                                        Bye
+                                    {% else %}
+                                        {{ game.getVisitor()|escape }}
+                                    {% endif %}
+                                    {% if game.getVisitor()!='' and game.getVisitor()!='' %}
+                                        <a href="/admin/score/{{ game.getId() }}/edit">Edit scores</a>
+                                    {% endif %}
+                                 </li>
+                            {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a href="/admin/tournament/{{ tournament.getId() }}/edit" class='btn btn-default btn-lg'>Edit</a>
+        </div>
+	</div>
+
+<a href="http://localhost/admin/league/{{league.getId()|escape}}/show">return to the list</a>
+{% endblock %}

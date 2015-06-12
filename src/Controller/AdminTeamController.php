@@ -12,8 +12,8 @@ class AdminTeamController extends ControllerAbstract
 {
     protected function isAlreadyCaptain($id)
     {
-        $teamRepository = $this->app->container->get('team.repository');
-        $teams = $teamRepository->getAll();
+        $em = $this->app->container->get('doctrine.entitymanager');
+        $teams = $em->getRepository('Pool\Entity\Team')->find($id);
         if (!$teams) {
             return false;
         }
@@ -28,16 +28,11 @@ class AdminTeamController extends ControllerAbstract
 
     protected function getCaptainList($id = false)
     {
-        $userRepository = $this->app->container->get('user.repository');
-        $users = $userRepository->getAll();
+        $em = $this->app->container->get('doctrine.entitymanager');
+        $users = $em->getRepository('Pool\Entity\User')->findAll();
         $selectCaptain = [];
         foreach ($users as $user) {
-            if ($user->isCaptain()) {
-                if (!$id && $this->isAlreadyCaptain($user->getId())) {
-                    continue;
-                }
-                $selectCaptain[$user->getId()] = $user->getName();
-            }
+            $selectCaptain[$user->getId()] = $user->getName();
         }
 
         return  $selectCaptain;
@@ -48,8 +43,9 @@ class AdminTeamController extends ControllerAbstract
      */
     public function editFormAction($id)
     {
-        $teamRepository = $this->app->container->get('team.repository');
-        $team = $teamRepository->find($id);
+        $em = $this->app->container->get('doctrine.entitymanager');
+        $team = $em->getRepository('Pool\Entity\Team')->find($id);
+
         if (!$team) {
             $this->app->flash('error', 'Cannot find this team');
             $this->app->redirect('/admin/team/list');
@@ -68,7 +64,7 @@ class AdminTeamController extends ControllerAbstract
         $data['selectCaptain'] = $selectCaptain;
         $data['id'] = $team->getId();
         $data['name'] = $team->getName();
-        $data['captain'] = $team->getCaptainId();
+        $data['captain'] = $team->getCaptain()->getId();
         $data['mode'] = 'edit';
 
         $this->app->render('admin/addTeam.html', $data);
@@ -93,9 +89,10 @@ class AdminTeamController extends ControllerAbstract
 
             return;
         }
+        $em = $this->app->container->get('doctrine.entitymanager');
+        $team = $em->getRepository('Pool\Entity\Team')->find($id);
 
-        $teamRepository = $this->app->container->get('team.repository');
-        if (!$teamRepository->find($id)) {
+        if (!$team) {
             $this->app->flash('error', 'Cannot find this team');
             $this->app->redirect('/admin/team/list');
         }
@@ -106,7 +103,7 @@ class AdminTeamController extends ControllerAbstract
         if (strlen($name) < 2) {
             $msg[] = 'Invalid name';
         }
-        $userRepository = $this->app->container->get('user.repository');
+        $userRepository = $em->getRepository('Pool\Entity\user');
         $captain = $userRepository->find($captain);
         if (!$captain) {
             $msg[] = 'Cannot find this user (as captain)';
@@ -124,12 +121,10 @@ class AdminTeamController extends ControllerAbstract
             return;
         }
 
-        $team = new Team();
         $team->setName($name);
-        $team->setCaptainId($captain->getId());
-        $team->setId($id);
-
-        $team = $teamRepository->persist($team);
+        $team->setCaptain($captain);
+        $em->persist($team);
+        $em->flush();
         $this->app->redirect('/admin/team/list');
     }
 
@@ -155,18 +150,19 @@ class AdminTeamController extends ControllerAbstract
     public function addAction()
     {
         $this->checkHash();
+
         $name = $this->app->request()->post('name');
         $captain = $this->app->request()->post('captain');
+        $name = filter_var($name, FILTER_SANITIZE_STRING);
+        $captain = filter_var($captain, FILTER_VALIDATE_INT);
 
         $msg = [];
-
-        $name = filter_var($name, FILTER_SANITIZE_STRING);
         if (strlen($name) < 2) {
             $msg[] = 'Invalid name';
         }
 
-        $userRepository = $this->app->container->get('user.repository');
-        $captain = $userRepository->find($captain);
+        $em = $this->app->container->get('doctrine.entitymanager');
+        $captain = $em->getRepository('Pool\Entity\User')->find($captain);
         if (!$captain) {
             $msg[] = 'cannot find this captain';
         }
@@ -183,24 +179,22 @@ class AdminTeamController extends ControllerAbstract
         }
         $team = new Team();
         $team->setName($name);
-        $team->setCaptainId($captain->getId());
-        $teamRepository = $this->app->container->get('team.repository');
-        $teamRepository->persist($team);
-
+        $team->setCaptain($captain);
+        $em->persist($team);
+        $em->flush();
         $this->app->redirect('/admin/team/add');
     }
 
     public function listAction()
     {
-        $teamRepository = $this->app->container->get('team.repository');
-        $userRepository = $this->app->container->get('user.repository');
-        $teams = $teamRepository->getAll();
+        $em = $this->app->container->get('doctrine.entitymanager');
+        $teams = $em->getRepository('Pool\Entity\Team')->findAll();
         if (!$teams) {
             $teams = [];
         } else {
             $captains = [];
             foreach ($teams as $team) {
-                $captain = $userRepository->find($team->getCaptainId());
+                $captain = $team->getCaptain();
                 if ($captain) {
                     $captains[$team->getId()] = $captain->getName();
                 } else {

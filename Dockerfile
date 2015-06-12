@@ -1,12 +1,15 @@
-FROM php:5.6
+FROM php:5.6-fpm
 
-RUN apt-get update -y && apt-get install -y git-core
-RUN echo 'date.timezone = UTC' > /usr/local/etc/php/conf.d/date.ini
+#RUN apt-get update -y && apt-get install -y git-core
 
-VOLUME /app
-WORKDIR /app
+RUN docker-php-ext-install pdo_mysql mbstring
 
-EXPOSE 8080
+RUN echo 'date.timezone = Asia/Bangkok' > /usr/local/etc/php/conf.d/date.ini
 
-ENTRYPOINT ["php"]
-CMD ["-S", "0.0.0.0:8080", "-t", "web"]
+VOLUME /var/www/
+WORKDIR /var/www/
+
+EXPOSE 9000
+
+# Run PHP-FPM on container start.
+CMD ["php-fpm","-F"]

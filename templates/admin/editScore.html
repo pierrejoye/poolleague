@@ -1,0 +1,52 @@
+{% extends "index.html" %}
+{% set title = 'BKK Pool League: Login' %}
+
+{% block content %}
+<a href="/admin/league/list">return to the list</a>
+	<div class="row">
+		<div class="col-lg-12">
+		<h1>{{ league|escape|upper}} - {{ tournament.getName()|escape }} - Round {{ round.getDate().format('j/n/Y')|escape }}</h1>
+		</div>
+	</div>
+
+    <form id="addform-form" action="{% if mode == "edit" %}/admin/score/{{ game.getId() }}/edit{% else %}/admin/score/{{ game.getId() }}/edit{% endif %} " method="POST" autocomplete="off">
+    <input type="submit" id="submit" name="save-scores" value="Save scores">
+    <div class="row">
+        <table summary="{{ league.getName()|escape }} Players list" class="table table-bordered table-hover">
+            <caption class="text-center">{{ league|escape|upper}} - {{ tournament.getName()|escape }} - Round {{ round.getDate().format('j/n/Y')|escape }}</caption>
+            <thead>
+                <tr>
+                    <th width="40%">Home</th>
+                    <th width="10%">Scores</th>
+                    <th width="40%">Visitor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in 1..24 %}
+                <tr>
+                    <td>
+                        <select name="match[home][]">
+                        {% for player in playersHome %}
+                            <option value="{{player.getId()}}">{{ player.getName() }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+                    <td><input type="text" name="homeScore[]" size="3" value="{{ scores[i].getScoreHome() }}">:<input type="text" name="visitorScore[]" size="3" value="{{ scores[i].getScoreVisitor() }}"></td>
+                    <td>
+                        <select name="match[visitor][]">
+                        {% for player in playersVisitor %}
+                            <option value="{{player.getId()}}">{{ player.getName() }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <input type="submit" id="submit" name="save-scores" value="Save scores">
+	<input type="hidden" name="h" value="{{ h }}">
+	<input type="hidden" name="id" value="{{ game.getId() }}">
+    </form>
+<a href="/admin/league/list">return to the list</a>
+{% endblock %}

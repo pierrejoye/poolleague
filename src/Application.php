@@ -49,7 +49,8 @@ class Application extends Slim
 
         if (!isset($this->innerCache['user'])) {
             /* @var $userRepository UserRepository */
-            $userRepository = $this->container->get('user.repository');
+            $em = $this->container->get('doctrine.entitymanager');
+            $userRepository = $em->getRepository('Pool\Entity\User');
             $user = $userRepository->find($_SESSION['user']);
 
             if (is_null($user)) {
@@ -65,7 +66,7 @@ class Application extends Slim
             if (!is_null($user)) {
                 if (substr($routePattern, 0, 6) == '/admin' && !$user->isAdmin()) {
                     $this->flash('error', 'Not allowed to access this section, brought back to home');
-                    $this->redirect('/');
+                    //$this->redirect('/');
                 }
             }
         }

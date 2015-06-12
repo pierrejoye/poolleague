@@ -12,10 +12,10 @@ class AdminLeagueController extends ControllerAbstract
     /**
      * GET /league/edit.
      */
-    public function editFormAction($leagueId)
+    public function editFormAction($id)
     {
-        $leagueRepository = $this->app->container->get('league.repository');
-        $league = $leagueRepository->find($leagueId);
+        $em = $this->app->container->get('doctrine.entitymanager');
+        $league = $em->getRepository('Pool\Entity\League')->find($id);
         if (!$league) {
             $this->app->flash('error', 'Cannot find this league');
             $this->app->redirect('/league/list');
@@ -34,10 +34,10 @@ class AdminLeagueController extends ControllerAbstract
     /**
      * GET /league/edit.
      */
-    public function editAction($leagueId)
+    public function editAction($id)
     {
-        $leagueRepository = $this->app->container->get('league.repository');
-        $league = $leagueRepository->find($leagueId);
+        $em = $this->app->container->get('doctrine.entitymanager');
+        $league = $em->getRepository('Pool\Entity\League')->find($id);
         if (!$league) {
             $this->app->flash('error', 'Cannot find this league');
             $this->app->redirect('/admin/league/list');
@@ -49,12 +49,12 @@ class AdminLeagueController extends ControllerAbstract
         $name = trim(filter_var($this->app->request()->post('name'), FILTER_SANITIZE_STRING));
         if (empty($name)) {
             $this->app->flash('error', 'Invalid name');
-            $this->app->redirect('/league/edit/'.$leagueId);
+            $this->app->redirect('/league/edit/'.$id);
 
             return;
         }
         $league->setName($name);
-        $leagueRepository->persist($league);
+        $em->persist($league);
         $this->app->redirect('/admin/league/list');
     }
 
@@ -72,11 +72,12 @@ class AdminLeagueController extends ControllerAbstract
             return;
         }
 
-        $leagueRepository = $this->app->container->get('league.repository');
-
         $league = new League();
         $league->setName($name);
-        $leagueRepository->persist($league);
+
+        $em = $this->app->container->get('doctrine.entitymanager');
+        $em->persist($league);
+        $em->flush();
 
         $this->app->redirect('/admin/league/list');
     }
@@ -98,19 +99,16 @@ class AdminLeagueController extends ControllerAbstract
      */
     public function showAction($id)
     {
-        $leagueRepository = $this->app->container->get('league.repository');
-        $league = $leagueRepository->find($id);
-        $teamsId = $league->getTeams();
+        $em = $this->app->container->get('doctrine.entitymanager');
+        $league = $em->getRepository('Pool\Entity\League')->find($id);
 
-        $teamRepository = $this->app->container->get('team.repository');
-        foreach ($teamsId as $teamId) {
-            $toAdd = $teamRepository->find($teamId);
-            $teams[] = $toAdd;
-        }
+        $tournaments = $em->getRepository('Pool\Entity\Tournament')->findBy(['league' => $league->getId()]);
+        $leagueTeams = $league->getTeams();
 
         $this->app->render('admin/showLeague.html', [
             'league' => $league,
-            'teams' => $teams,
+            'teams' => $leagueTeams,
+            'tournaments' => $tournaments,
         ]);
     }
 
@@ -119,8 +117,8 @@ class AdminLeagueController extends ControllerAbstract
      */
     public function listAction()
     {
-        $leagueRepository = $this->app->container->get('league.repository');
-        $leagues = $leagueRepository->getAll();
+        $em = $this->app->container->get('doctrine.entitymanager');
+        $leagues = $em->getRepository('Pool\Entity\League')->findAll();
         $this->app->render('admin/listLeague.html', [
             'leagues' => $leagues,
         ]);
@@ -133,8 +131,8 @@ class AdminLeagueController extends ControllerAbstract
     {
         $this->getHash();
 
-        $leagueRepository = $this->app->container->get('league.repository');
-        $league = $leagueRepository->find($leagueId);
+        $em = $this->app->container->get('doctrine.entitymanager');
+        $league = $em->getRepository('Pool\Entity\League')->find($leagueId);
         if (!$league) {
             $this->app->flash('error', 'Cannot find this league');
             $this->app->redirect('/admin/league/list');
@@ -143,8 +141,7 @@ class AdminLeagueController extends ControllerAbstract
         }
 
         $teamsLeague = $league->getTeams();
-        $teamRepository = $this->app->container->get('team.repository');
-        $teamsAll = $teamRepository->getAll();
+        $teamsAll = $em->getRepository('Pool\Entity\Team')->findAll();
 
         if (!is_array($teamsAll)) {
             $this->app->flash('error', 'Please first create teams');
@@ -152,23 +149,22 @@ class AdminLeagueController extends ControllerAbstract
 
             return;
         }
+
+        $listNotInLeague = [];
         foreach ($teamsAll as $team) {
-            $listSelect[$team->getId()] = [
-                'name' => $team->getName(),
-                'active' => false,
-            ];
+            $listNotInLeague[$team->getId()] = $team->getName();
         }
-
+        $listInLeague = [];
         foreach ($teamsLeague as $team) {
-            $listSelect[$team->id]['active'] = true;
+            $listInLeague[$team->getId()] = $listNotInLeague[$team->getId()];
         }
-
-        $leagueTeams = $league->getTeams();
+        $listNotInLeague = array_diff($listNotInLeague, $listInLeague);
 
         $this->app->render('admin/leagueAddTeam.html', [
             'h' => $this->getHash(),
             'league' => $league,
-            'listSelectTeams' => $listSelect,
+            'listNotInLeague' => $listNotInLeague,
+            'listInLeague' => $listInLeague,
         ]);
     }
 
@@ -178,8 +174,8 @@ class AdminLeagueController extends ControllerAbstract
     public function editTeamAction($leagueId)
     {
         $this->getHash();
-
-        $leagueRepository = $this->app->container->get('league.repository');
+        $em = $this->app->container->get('doctrine.entitymanager');
+        $leagueRepository = $em->getRepository('Pool\Entity\League');
         $league = $leagueRepository->find($leagueId);
         if (!$league) {
             $this->app->flash('error', 'Cannot find this league');
@@ -187,23 +183,43 @@ class AdminLeagueController extends ControllerAbstract
 
             return;
         }
-        $teams = $this->app->request()->post('teams');
 
-        if (!is_array($teams) || count($teams) < 2) {
+        $teamsId = $this->app->request()->post('teams');
+
+        if (!is_array($teamsId) || count($teamsId) < 2) {
             $this->app->flash('error', 'At least two teams must be selected (or created)');
             $this->app->redirect('/admin/league/list');
 
             return;
         }
-        $teamsElem = count($teams);
-
-        for ($i = 0; $i < $teamsElem; $i++) {
-            $teams[$i] = (int) $teams[$i];
+        foreach ($teamsId as $teamId) {
+            if ((int) $teamId < 1) {
+                $this->app->flash('error', 'Invalid team');
+                $this->app->redirect('/admin/league/list');
+            }
         }
 
-        $league->setTeamsFromId($teams);
-        $leagueRepository->persist($league);
+        $teams = $em->getRepository('Pool\Entity\Team')->findBy(['id' => $teamsId]);
+        if (count($teams) != count($teamsId)) {
+            $this->app->flash('error', 'Invalid team');
+            $this->app->redirect('/admin/league/list');
+        }
 
+        $teamsInLeagueObject = $league->getTeams();
+        $teamsInLeagueNames = [];
+        foreach ($teamsInLeagueObject as $team) {
+            $league->removeTeam($team);
+        }
+        $em->persist($league);
+        $em->flush();
+
+        foreach ($teams as $team) {
+            $league->addTeam($team);
+        }
+        $teams = $league->getTeams();
+
+        $em->persist($league);
+        $em->flush();
         $this->app->redirect('/admin/league/'.$league->getId().'/show');
     }
 }

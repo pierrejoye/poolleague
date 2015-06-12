@@ -1,11 +1,22 @@
 <?php
 require __DIR__.'/../vendor/autoload.php';
 use Slim\Helper\Set;
+
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\Tools\Setup;
+use Doctrine\ORM\EntityManager;  
+use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\AnnotationRegistry;
+
+
 use Pool\Application;
 use Pool\Entity\UserRepository;
 use Pool\Entity\TeamRepository;
 use Pool\Entity\LeagueRepository;
 use Pool\Entity\TournamentRepository;
+use Pool\Entity\RoundRepository;
+use Pool\Entity\League;
 
 function check_or_create_json_dir(Application $app)
 {
@@ -36,6 +47,34 @@ $app->container->singleton(
     }
 );
 
+// Config
+$app->container->singleton(
+    'doctrine.entitymanager',
+    function (Set $container) {
+		$paths = [
+			__DIR__."/../src/Entity/",
+		];
+
+		$isDevMode = true;  
+		$dbParams = $container->get('app.config')['doctrine'];
+		$config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, null, null, FALSE);
+		return EntityManager::create($dbParams, $config);
+    }
+);
+
+
+// PDO client
+$app->container->singleton(
+    'pdo.client',
+    function (Set $container) {
+		$config = $container->get('app.config');
+		$dsn = 'mysql:host='.$config['pdo']['host'].';dbname='.$config['pdo']['database'];
+		$pdo = new \PDO($dsn, $config['pdo']['user'], $config['pdo']['password']);
+		$pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        return $pdo;
+    }
+);
+
 // Redis client
 $app->container->singleton(
     'redis.client',
@@ -48,11 +87,12 @@ $app->container->singleton(
     }
 );
 
+if (0) {
 // User repository
 $app->container->singleton(
     'user.repository',
     function (Set $container) {
-        return new UserRepository($container->get('redis.client'));
+        return new UserRepository($container->get('pdo.client'));
     }
 );
 
@@ -60,7 +100,7 @@ $app->container->singleton(
 $app->container->singleton(
     'team.repository',
     function (Set $container) {
-        return new TeamRepository($container->get('redis.client'));
+        return new TeamRepository($container->get('pdo.client'));
     }
 );
 
@@ -68,7 +108,7 @@ $app->container->singleton(
 $app->container->singleton(
     'league.repository',
     function (Set $container) {
-        return new LeagueRepository($container->get('redis.client'));
+        return new LeagueRepository($container->get('pdo.client'));
     }
 );
 
@@ -77,11 +117,18 @@ $app->container->singleton(
 $app->container->singleton(
     'tournament.repository',
     function (Set $container) {
-        return new TournamentRepository($container->get('redis.client'));
+        return new TournamentRepository($container->get('pdo.client'));
     }
 );
 
-
+// Tournament repository
+$app->container->singleton(
+    'round.repository',
+    function (Set $container) {
+        return new RoundRepository($container->get('pdo.client'));
+    }
+);
+}
 // Default
 $app->get('/', 'Pool\Controller\DefaultController:indexAction');
 
@@ -129,20 +176,20 @@ $app->getSecured('/admin/league/:id/show', 'Pool\Controller\AdminLeagueControlle
 $app->getSecured('/admin/league/add', 'Pool\Controller\AdminLeagueController:addFormAction');
 $app->postSecured('/admin/league/add', 'Pool\Controller\AdminLeagueController:addAction');
 
-$app->getSecured('/admin/league/edit/:id', 'Pool\Controller\AdminLeagueController:editFormAction');
-$app->postSecured('/admin/league/edit/:id', 'Pool\Controller\AdminLeagueController:editAction');
+$app->getSecured('/admin/league/:id/edit', 'Pool\Controller\AdminLeagueController:editFormAction');
+$app->postSecured('/admin/league/:id/edit', 'Pool\Controller\AdminLeagueController:editAction');
 
 $app->getSecured('/admin/league/:id/tournament/add', 'Pool\Controller\AdminTournamentController:addFormAction');
 $app->postSecured('/admin/league/:id/tournament/add', 'Pool\Controller\AdminTournamentController:addAction');
 
-$app->getSecured('/admin/tournament/edit/:tournamentid', 'Pool\Controller\AdminTournamentController:editFormAction');
-$app->postSecured('/admin/tournament/edit/:tournamentid', 'Pool\Controller\AdminTournamentController:editAction');
-
+$app->getSecured('/admin/tournament/:tournamentid/edit', 'Pool\Controller\AdminTournamentController:editFormAction');
+$app->postSecured('/admin/tournament/:tournamentid/edit', 'Pool\Controller\AdminTournamentController:editAction');
+$app->getSecured('/admin/tournament/:tournamentid/show', 'Pool\Controller\AdminTournamentController:showAction');
 
 $app->getSecured('/admin/league/:id/team/edit', 'Pool\Controller\AdminLeagueController:editTeamFormAction');
 $app->postSecured('/admin/league/:id/team/edit', 'Pool\Controller\AdminLeagueController:editTeamAction');
 
 // Score
-//$app->getSecured('/admin/score/list', 'Pool\Controller\AdminScoreController:list');
-
+$app->getSecured('/admin/score/:scoreId/edit', 'Pool\Controller\AdminScoreController:editFormShow');
+$app->postSecured('/admin/score/:scoreId/edit', 'Pool\Controller\AdminScoreController:editFormAction');
 $app->run();

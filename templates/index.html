@@ -55,6 +55,7 @@
                             <li><a href="/yourteam">Your team</a></li>
                             <li><a href="/enterscore">Enter Score</a></li>
                         {% endif %}
+                        <li><a href="/ranking">Ranking</a></li>
                         <li><a href="/profile">Account</a></li>
                         <li><a href="/logout">Logout</a></li>
                     {% else %}
@@ -91,5 +92,6 @@
     <script src="/assets/js/jquery.min.js"></script>
     <script src="/assets/js/bootstrap.min.js"></script>
     <script src="/assets/js/ie10-viewport-bug-workaround.js"></script>
+    <script>{% block morejs%}{% endblock %}</script>
   </body>
 </html>

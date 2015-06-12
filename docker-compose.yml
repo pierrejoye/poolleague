@@ -1,3 +1,18 @@
+mysql:
+  image: mariadb:latest
+  expose:
+    - "3306"
+  ports:
+    - "3307:3306"
+  volumes:
+    - ./data/mysql:/var/lib/mysql/
+  environment:
+    MYSQL_DATABASE: poolleage
+    MYSQL_USER: poolleague
+    MYSQL_PASSWORD: admin
+    MYSQL_ROOT_PASSWORD: admin
+
+
 redis:
     image: redis
     command: redis-server --appendonly yes
@@ -6,11 +21,24 @@ redis:
     ports:
        - 6379:6379 
 
-web:
+nginx:
+    image: nginx
+    ports:
+        - 80:80
+        - 443:443
+    links:
+        - php
+    volumes:
+        - ./config:/etc/nginx/conf.d
+        - logs/nginx/:/var/log/nginx
+        - .:/var/www/
+
+php:
     build: .
     volumes:
-        - .:/app
-    ports:
-        - 8080:8080
+        - .:/var/www/
+    expose:
+        - 9000
     links:
         - redis
+        - mysql

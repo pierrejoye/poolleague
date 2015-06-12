@@ -3,7 +3,7 @@
 
 {% block content %}
 <a href="/admin/league/list">return to the list</a>
-<form id="addform-form" action="{% if mode == "edit" %}/admin/league/edit/{{ league.getId() }}{% else %}/admin/league/add{% endif %} " method="POST" autocomplete="off">
+<form id="addform-form" action="{% if mode == "edit" %}/admin/league/{{ league.getId() }}/edit{% else %}/admin/league/add{% endif %} " method="POST" autocomplete="off">
 	<div class="row">
 		<div class="col-lg-12">
 		<h1>Add a leage</h1>

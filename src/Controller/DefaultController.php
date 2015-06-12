@@ -14,7 +14,6 @@ class DefaultController extends ControllerAbstract
     {
         $this->app->render('home.html',
             [
-
             ]);
     }
 }

@@ -39,17 +39,17 @@ class AuthController extends ControllerAbstract
 
             return;
         }
+        $em = $this->app->container->get('doctrine.entitymanager');
+        $user = $em->getRepository('Pool\Entity\User')->findOneBy(['email' => $email]);
 
-        $userRepository = $this->app->container->get('user.repository');
-        $user = $userRepository->findByEmail($email);
         if (!$user) {
-            die('no user found');
             $this->invalidLogin();
 
             return;
         }
-
-        $user->checkPassword($password);
+        if (!$user->checkPassword($password)) {
+            $this->invalidLogin();
+        }
         $_SESSION['user'] = $user->getId();
         $this->app->redirect('/');
     }

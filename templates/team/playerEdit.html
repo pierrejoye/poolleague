@@ -20,18 +20,21 @@
                 </tr>
             </thead>
             <tbody>
-            <tbody>
                 {% for player in players %}
                 <tr>
 {% if player != '' %}
                     <td>
                         Name:<input type="text" id="name" name="names[{{i}}]" value="{{ player|escape }}" size="50%">
+                    </td>
+                    <td>
                         Email:<input type="email" id="email" name="emails[{{i}}]" value="{{ player.getEmail()|escape() }}" size="50%">
                         <input type="hidden" id="id" name="id[{{i}}]" value="{{ player.getId() }}" size="50%">
                     </td>
 {% else %}
                     <td>
                         Name:<input type="text" id="name" name="names[{{i}}]" value="" size="50%">
+                    </td>
+                    <td>
                         Email;<input type="email" id="email" name="emails[{{i}}]" value="" size="50%">
                         <input type="hidden" id="id" name="id[{{i}}]" value="" size="50%">
                     </td>

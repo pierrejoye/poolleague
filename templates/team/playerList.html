@@ -3,7 +3,7 @@
 {% set title = 'BKK Pool League' %}
 
 {% block content %}
-<a href="/team/{{ team.getId() }}/player/add">edit players</a>
+<a href="/team/{{ team.getId() }}/player/add">edit players</a> | <a href="/admin/team/list">Return to team</a>
 <div class="table-responsive">
 <table summary="{{ team.getName()|escape }} Players list" class="table table-bordered table-hover">
 	<caption class="text-center">{{ team.getName()|escape}} Players list</caption>
@@ -21,5 +21,5 @@
 	</tbody>
 </table>
 </div>
-<a href="/team/{{ team.getId() }}/player/add">edit players</a>
+<a href="/team/{{ team.getId() }}/player/add">edit players</a> | <a href="/admin/team/list">Return to team</a>
 {% endblock %}

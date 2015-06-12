@@ -2,94 +2,68 @@
 
 namespace Pool\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
+
 /**
- * Class User.
+ * Team.
+ *
+ * @ORM\Table(name="team")
+ * @ORM\Entity
  */
-class Team implements \Serializable
+class Team
 {
     /**
      * @var string
-     */
-    protected $id = false;
-
-    /**
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @var string
-     */
-    protected $picture;
-
-    /**
-     * @var User
-     */
-    protected $captain;
-
-    /**
-     * @var array
-     */
-    protected $players = [];
-
-    /**
-     * @return array
-     */
-    public function getPlayers()
-    {
-        return $this->players;
-    }
-
-    public function setPlayers($players)
-    {
-        $this->players = [];
-        foreach ($players as $player) {
-            $this->players[] = $player->getId();
-        }
-
-        return $this;
-    }
-
-    public function setPlayersFromId($players)
-    {
-        $this->players = [];
-        foreach ($players as $playerId) {
-            $this->players[] = $playerId;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param int
      *
-     * @return Team
+     * @ORM\Column(name="name", type="string", length=80, nullable=true)
      */
-    public function setId($id)
-    {
-        $this->id = $id;
+    private $name;
 
-        return $this;
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $id;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
+     * @ORM\ManyToMany(targetEntity="Pool\Entity\League", inversedBy="teams")
+     * @ORM\JoinTable(name="teams_leagues")
+     */
+    private $leagues;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
+     * @ORM\ManyToMany(targetEntity="Pool\Entity\User", mappedBy="teams")
+     */
+    private $players;
+
+    /**
+     * @var Pool\Entity\User
+     *
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="team")
+     * @ORM\JoinColumn(name="captain_id", referencedColumnName="id")
+     */
+    private $captain;
+
+    /**
+     * Constructor.
+     */
+    public function __construct()
+    {
+        $this->leagues = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->players = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param string
+     * Set name.
+     *
+     * @param string $name
      *
      * @return Team
      */
@@ -101,72 +75,121 @@ class Team implements \Serializable
     }
 
     /**
-     * @return User
+     * Get name.
+     *
+     * @return string
      */
-    public function getCaptainId()
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Get id.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set captain.
+     *
+     * @param \Pool\Entity\User $user
+     *
+     * @return Team
+     */
+    public function setCaptain(\Pool\Entity\User $user)
+    {
+        $this->captain = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get captain.
+     *
+     * @return \Pool\Entity\User
+     */
+    public function getCaptain()
     {
         return $this->captain;
     }
 
-    /*
-     * @param User
+    /**
+     * Add league.
      *
-     * return $this
+     * @param \Pool\Entity\League $league
+     *
+     * @return Team
      */
-    public function setCaptainId($id)
+    public function addLeague(\Pool\Entity\League $league)
     {
-        $this->captain = $id;
+        $this->leagues[] = $league;
 
         return $this;
     }
 
     /**
-     * @return string
+     * Remove league.
+     *
+     * @param \Pool\Entity\League $league
      */
-    public function getPicture()
+    public function removeLeague(\Pool\Entity\League $league)
     {
-        return $this->picture;
+        $this->leagues->removeElement($league);
     }
 
     /**
-     * @param string $picture
+     * Get leagues.
      *
-     * @return User
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function setPicture($picture)
+    public function getLeagues()
     {
-        $this->picture = $picture;
+        return $this->leagues;
+    }
+
+    /**
+     * Add player.
+     *
+     * @param \Pool\Entity\User $player
+     *
+     * @return Team
+     */
+    public function addPlayer(\Pool\Entity\User $player)
+    {
+        $player->addTeam($this);
+        $this->players[] = $player;
 
         return $this;
     }
 
     /**
-     * {@inheritdoc}
+     * Remove player.
+     *
+     * @param \Pool\Entity\User $player
      */
-    public function serialize()
+    public function removePlayer(\Pool\Entity\User $player)
     {
-        return json_encode(get_object_vars($this));
+        $this->players->removeElement($player);
+        $player->removeTeam($this);
     }
 
     /**
-     * {@inheritdoc}
+     * Get players.
+     *
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function unserialize($serialized)
+    public function getPlayers()
     {
-        $data = json_decode($serialized, true);
-
-        $fields = get_object_vars($this);
-        foreach ($data as $key => $value) {
-            if (array_key_exists($key, $fields)) {
-                $this->$key = $value;
-            }
-        }
+        return $this->players;
     }
 
     public function __toString()
     {
-        return $this->getName();
+        return $this->name;
     }
 }
-
-/* vim: set tabstop=4 shiftwidth=4 expandtab: fdm=marker */

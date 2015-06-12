@@ -2,7 +2,7 @@
 {% set title = 'BKK Pool League: Login' %}
 
 {% block content %}
-<a href="/league/list">return to the list</a>
+<a href="/admin/league/list">return to the list</a>
 
 	<div class="row">
 		<div class="col-lg-12">
@@ -17,12 +17,14 @@
                 <thead>
                     <tr>
                         <th>Name</th>
+                        <th>Captain</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for team in teams %}
                     <tr>
                         <td>{{ team|escape }}</td>
+                        <td>{{ team.getCaptain()|escape }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -30,29 +32,29 @@
             <a href="/admin/league/{{ league.getId() }}/team/edit" class='btn btn-default btn-lg'>Add Team</a>
         </div>
 		<div class="row">
-                <a href="/admin/league/{{ league.getId() }}/tournament/edit" class='btn btn-default btn-lg'>Add Tournament</a>
+                <a href="/admin/league/{{ league.getId() }}/tournament/add" class='btn btn-default btn-lg'>Add Tournament</a>
                 <table summary="{{ league.getName()|escape }} Players list" class="table table-bordered table-hover">
                     <caption class="text-center">{{ league.getName()|escape|upper}} Tournaments</caption>
                     <thead>
                         <tr>
-                            <th>Date</th>
                             <th>Name</th>
+                            <th>Rounds</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for date,tournament in league.getTournaments %}
+                        {% for tournament in tournaments %}
                         <tr>
-                            <td>{{ date|escape }}</td>
-                            <td>{{ tournament|escape }}</td>
+                            <td><a href="/admin/tournament/{{tournament.getId()}}/show">{{ tournament|escape }}</a></td>
+                            <td>{{ tournament.getRounds()|length|escape }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-                <a href="/admin/league/{{ league.getId() }}/tournament/edit" class='btn btn-default btn-lg'>Add Tournament</a>
+                <a href="/admin/league/{{ league.getId() }}/tournament/add" class='btn btn-default btn-lg'>Add Tournament</a>
 		</div>
 	</div>
 	<input type="hidden" name="h" value="{{ h }}">
 	<input type="hidden" name="id" value="{{ league.getId() }}">
 
-<a href="/league/list">return to the list</a>
+<a href="/admin/league/list">return to the list</a>
 {% endblock %}

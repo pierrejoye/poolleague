@@ -11,8 +11,8 @@ class TeamController extends ControllerAbstract
 {
     protected function getTeam($id)
     {
-        $teamRepository = $this->app->container->get('team.repository');
-        $team = $teamRepository->find($id);
+        $em = $this->app->container->get('doctrine.entitymanager');
+        $team = $em->getRepository('Pool\Entity\Team')->find($id);
         if (!$team) {
             $this->app->flash('error', 'cannot find this team');
             $this->app->redirect('/team/list');
@@ -29,14 +29,15 @@ class TeamController extends ControllerAbstract
     public function PlayerAddForm($teamId)
     {
         $team = $this->getTeam($teamId);
-        $users = $team->getPlayers();
-
-        $userRepository = $this->app->container->get('user.repository');
-        foreach ($users as $playerId) {
-            $players[] = $userRepository->find($playerId);
+        $players = $team->getPlayers();
+        if (!$players) {
+            $players = [];
         }
+        $em = $this->app->container->get('doctrine.entitymanager');
 
-        $toAdd = 20 - count($users);
+        $toAdd = 20 - count($players) - 1;
+
+        $players[0] = $team->getCaptain();
         for ($i = 0; $i < $toAdd; $i++) {
             $players[] = '';
         }
@@ -93,25 +94,36 @@ class TeamController extends ControllerAbstract
             $this->app->flash('error', implode($msg, '<br/>'));
             $this->app->redirect('/team/'.$team->getId().'/list');
         }
+        $currentPlayers = $team->getPlayers();
+        $em = $this->app->container->get('doctrine.entitymanager');
+        $userRepository = $em->getRepository('Pool\Entity\User');
+        /*
+         * Check if user already registered
+         * Add non existing users
+         * Just assign existing users to the team if he exists
+         */
 
-        $userRepository = $this->app->container->get('user.repository');
-        $users = [];
         foreach ($players as $player) {
-            $existingUser = $userRepository->findByEmail($email);
+            $existingUser = $userRepository->findOneBy(['email' => $player['email']]);
             if ($existingUser) {
                 $user = $existingUser;
+                foreach ($currentPlayers as $p) {
+                    if ($p->getEmail() == $user->getEmail()) {
+                        continue 2;
+                    }
+                }
             } else {
+                echo $player['email']."not found\n";
                 $user = new User();
                 $user->setName($player['name']);
                 $user->setEmail($player['email']);
-                $user->setRole('player');
-                $userRepository->persist($user);
+                $em->persist($user);
             }
-            $users[] = $user;
+            $team->addPlayer($user);
         }
-        $team->setPlayers($users);
-        $teamRepository = $this->app->container->get('team.repository');
-        $teamRepository->persist($team);
+
+        $em->persist($team);
+        $em->flush();
         $this->app->redirect('/team/'.$team->getId().'/player/list');
     }
 
@@ -121,11 +133,10 @@ class TeamController extends ControllerAbstract
     public function playerList($teamId)
     {
         $team = $this->getTeam($teamId);
-        $playersId = $team->getPlayers();
-        $userRepository = $this->app->container->get('user.repository');
-        foreach ($playersId as $playerId) {
-            $players[] = $userRepository->find($playerId);
-        }
+
+        $em = $this->app->container->get('doctrine.entitymanager');
+        $team = $em->getRepository('Pool\Entity\Team')->find($teamId);
+        $players = $team->getPlayers();
 
         $this->app->render('team/playerList.html', [
         'team' => $team,

@@ -4,7 +4,7 @@
 
 {% block content %}
 <a href="/admin/league/{{ league.getId() }}/show">return to the list</a>
-<form id="addform-form" action="{% if mode == "edit" %}/admin/tournament/edit/{{ tournament.getId() }}{% else %}/admin/league/{{ league.getId() }}/tournament/add{% endif %} " method="POST" autocomplete="off">
+<form id="addform-form" action="{% if mode == "edit" %}/admin/tournament/{{ tournament.getId() }}/edit{% else %}/admin/league/{{ league.getId() }}/tournament/add{% endif %} " method="POST" autocomplete="off">
 	<div class="row">
 		<div class="col-lg-12">
 		<h1>Add a tournament for {{ league|escape|upper}}</h1>
@@ -12,11 +12,61 @@
 	</div>
 	<div class="row">
 		<div class="row">
+            <div class="col-lg-12 search-form">
+            {% if mode != "edit" %}
+                <input type="submit" id="submit" name="add-league" value="Add Tournament">
+            {% else %}
+                <input type="submit" id="submit" name="edit-league" value="Update Tournament">
+            {% endif%}
+            </div>
 			<div class="col-lg-12 search-form">
-                <label for="name">Name</label> <input type="text" id="name" name="name" value="{{ tournament.getName|escape }}" size="80">
+                <label for="name">Name</label> <input type="text" id="name" name="name" value="{{ tournament.getName()|escape }}" size="80">
 			</div>
-			<div class="col-lg-12 search-form">
-                <label for="date">Date (dd/mm/yyyy)</label><input type="text" type="text" name="tournamentDate" class="form-control" id="tournamentDate" size="80">
+            <div class="col-lg-12 search-form">
+                <label for="rounds">Rounds</label><input type="text" type="text" name="rounds" class="form-control" id="rounds" readonly value="18">
+			</div>
+            <div class="col-lg-12 search-form">
+                <a href="#" onClick="fillDate();">Fill date</a>
+                <table summary="{{ league.getName()|escape }} Rounds list" class="table table-bordered table-hover">
+                    <caption class="text-center">Rounds list</caption>
+                    <tr><td width="40%"><h3>Home</h3></td><td></td><td><h3>Visitor</h3></td></tr></tr>
+{% for i,round in fixtures %}
+                    <tr>
+                        <td colspan="3">
+                            <h3>Round: #{{ i+1 }}</h3>
+                            <label for="date">Date</label><input type="text" type="text" name="roundDate[{{ round.getId() }}]"  id="tournamentDate" value="{{ round.getDate()|escape }}">
+                        </td>
+                    </tr>
+    {% for match in round %}
+                    <tr>
+                        <td width="40%">
+                            <select name="home[{{ i }}][{{ match.getId() }}]">
+                            {% for team in teams %}
+                                {% if match.home.getName()=='Bye' %}
+                                    <option value="-1"{% if match.home.getId()==team.getId() %} selected  {% endif %}>Bye</option>
+                                {% else %}
+                                    <option value="{{team.getId()}}"{% if match.home.getId()==team.getId() %} selected  {% endif %}>{{ team|escape }}</option>
+                                {% endif %}
+                            {% endfor %}
+                            </select>
+                        </td>
+                         <td>vs</td>
+                        <td>
+                            
+                            <select name="visitor[{{ i }}][{{ match.getId() }}]">
+                            {% for team in teams %}
+                                {% if match.visitor.getName()=='Bye' %}
+                                    <option value="-1"{% if match.visitor.getId()==team.getId() %} selected  {% endif %}>Bye</option>
+                                {% else %}
+                                    <option value="{{team.getId()}}"{% if match.visitor.getId()==team.getId() %} selected  {% endif %}>{{ team|escape }}</option>
+                                {% endif %}
+                            {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+    {% endfor %}
+{% endfor %}
+                </table>
 			</div>
 			<div class="col-lg-12 search-form">
 			{% if mode != "edit" %}
@@ -29,13 +79,26 @@
 	</div>
 	<input type="hidden" name="h" value="{{ h }}">
 	<input type="hidden" name="id" value="{{ tournament.getId() }}">
+    <input type="hidden" name="leagueId" value="{{ league.getId() }}">
 </form>
 <a href="/admin/league/{{ league.getId() }}/show">return to the list</a>
 <script>
-    $('#tournamentDate').datepicker({
+    $('input[name^="roundDate"]').datepicker({
+    //$('#tournamentDate').datepicker({
     weekStart: 1,
+    calendarWeeks: 1,
     format: "dd/mm/yyyy",
     autoclose: true
 });
+dateFirstRound = new Date;
+function fillDate()
+{
+    $('input[name^="roundDate"]').each(
+    function (){
+        dateFirstRound.setDate(dateFirstRound.getDate()+7);
+        this.value=  dateFirstRound.getDate() + '/' + dateFirstRound.getMonth() + '/' + dateFirstRound.getFullYear();
+    })
+}
+
 </script>
 {% endblock %}

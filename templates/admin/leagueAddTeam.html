@@ -1,33 +1,39 @@
 {% extends "index.html" %}
-{% set title = 'BKK Pool League: Login' %}
-
+{% set title = 'BKK Pool League' %}
 {% block content %}
-<a href="/league/list">return to the list</a>
+<a href="/admin/league/{{ league.getId() }}/show">return to the League</a>	<div class="row">
+    <div class="col-lg-12">
+    <h1>{{ league.getName()|escape|upper}}</h1>
+    </div>
 
-	<div class="row">
-		<div class="col-lg-12">
-		<h1>{{ league|escape|upper}}</h1>
-		</div>
-	</div>
-<a href="/admin/league/{{ league.getId() }}/show">return to the League</a>
-    <form id="addform-form" action="/admin/league/{{ league.getId() }}/team/edit" method="POST" autocomplete="off">
+    <form id="addteam" action="/admin/league/{{ league.getId() }}/team/edit" method="POST" autocomplete="off">
         <div class="row">
             <div class="col-lg-12">
-            <h1>Select teams for {{ league|escape|upper}}</h1>
+            <h1>Select teams for {{ league.getName()|escape|upper}}</h1>
             </div>
         </div>
         <div class="row">
             <div class="row">
-                <div class="col-lg-12 search-form">
-                    <select name="teams[]]" multiple width="80" class="form-control">
-                        {% for id, team in listSelectTeams %}
-                        <option value="{{ id }}" {% if team['active']%} selected {% endif %}}>{{ team['name'] }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-lg-12 search-form">
-                    <input type="submit" id="submit" name="edit-league" value="Update Teams">
-                </div>
+                <input type="submit" id="submit" name="edit-league" value="Update Teams">
+            </div>
+            <div class="row">
+                <select name="allteams[]" id="allteams" multiple size="10">
+                {% for id, team in listNotInLeague %}
+                    <option value="{{ id }}">{{ team|escape}}</option>
+                {% endfor %}
+                </select>
+        
+                <a href="JavaScript:void(0);" id="btn-add">Add &raquo;</a>
+                <a href="JavaScript:void(0);" id="btn-remove">&laquo; Remove</a>
+                    
+                <select name="teams[]" id="teams" multiple size="10">
+                {% for id, team in listInLeague %}
+                    <option value="{{ id }}">{{ team|escape}}</option>
+                {% endfor %}
+                </select>
+            </div>
+            <div class="row">
+                <input type="submit" name="edit-league" value="Update Teams">
             </div>
         </div>
     </form>
@@ -35,3 +41,24 @@
 <input type="hidden" name="h" value="{{ h }}">
 <input type="hidden" name="id" value="{{ tournament.getId() }}">
 {% endblock %}
+{% block morejs %}
+$(document).ready(function() {
+ 
+    $('#btn-add').click(function(){
+        $('#allteams option:selected').each( function() {
+                $('#teams').append("<option value='"+$(this).val()+"'>"+$(this).text()+"</option>");
+            $(this).remove();
+        });
+    });
+
+    $('#btn-remove').click(function(){
+        $('#teams option:selected').each( function() {
+            $('#allteams').append("<option value='"+$(this).val()+"'>"+$(this).text()+"</option>");
+            $(this).remove();
+        });
+    });
+    $(document).on('submit','#addteam',function(){
+        $('#teams option').prop('selected', true);
+    });
+});
+{% endblock%}
