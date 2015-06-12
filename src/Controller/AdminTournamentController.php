@@ -312,9 +312,7 @@ class AdminTournamentController extends ControllerAbstract
         }
         $league = $tournament->getLeague();
         $rounds = $tournament->getRounds();
-        echo '<pre>';
 
-        echo '</pre>';
         $this->app->render('admin/showTournament.html', [
             'league' => $league,
             'tournament' => $tournament,
