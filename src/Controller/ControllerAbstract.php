@@ -34,6 +34,7 @@ abstract class ControllerAbstract
     {
         $hRequest = $this->app->request()->post('h');
         $hSession = isset($_SESSION['h']) ?  $_SESSION['h'] : false;
+        $failed = false;
         if (!is_string($hRequest) || !is_string($hSession)) {
             $failed = true;
         } else {

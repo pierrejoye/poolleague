@@ -9,7 +9,7 @@ use Pool\Entity\User;
  */
 class AdminUserController extends ControllerAbstract
 {
-    protected function validPostData($id)
+    protected function validPostData($id=null)
     {
         $this->checkHash();
         $name = $this->app->request()->post('name');
@@ -21,7 +21,7 @@ class AdminUserController extends ControllerAbstract
 
         $msg = [];
 
-        if ($idPost != $id) {
+        if ($id != null && $idPost != $id) {
             $this->app->flash('error', 'Cannot find this user');
             $this->app->redirect('/admin/user/list');
 
@@ -86,7 +86,7 @@ class AdminUserController extends ControllerAbstract
         }
         $user->setName($data['name']);
         $user->setEmail($data['email']);
-        $user->setIsadmin($role == 'admin' ? true : false);
+        $user->setIsadmin($data['role'] == 'admin' ? true : false);
         if (!empty($data['password'])) {
             $user->setPassword($data['password']);
         }
@@ -145,7 +145,7 @@ class AdminUserController extends ControllerAbstract
      */
     public function addUserAction()
     {
-        $data = $this->validPostData($id);
+        $data = $this->validPostData();
         $this->updateOrAddUser($data);
         $this->app->redirect('/admin/user/list');
     }
