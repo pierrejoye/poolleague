@@ -308,7 +308,7 @@ class AdminTournamentController extends ControllerAbstract
         $tournament = $tournamentRepository->find($id);
         if (!$tournament) {
             $this->app->flash('error', 'Cannot find this tournament');
-            //$this->app->redirect('/admin/league/list');
+            $this->app->redirect('/admin/league/list');
         }
         $league = $tournament->getLeague();
         $rounds = $tournament->getRounds();

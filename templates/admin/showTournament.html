@@ -42,6 +42,9 @@
                                     {% else %}
                                         {{ game.getVisitor()|escape }}
                                     {% endif %}
+
+                                    ({{ game.getScoreHome()}}:{{ game.getScoreVisitor()}})
+
                                     {% if game.getVisitor()!='' and game.getVisitor()!='' %}
                                         <a href="/admin/score/{{ game.getId() }}/edit">Edit scores</a>
                                     {% endif %}

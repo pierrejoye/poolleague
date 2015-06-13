@@ -50,17 +50,18 @@ class Game
 
     /**
      * @var int
+     *
+     * @ORM\Column(name="score_home", type="integer", nullable=true)
      */
     private $scoreHome;
 
     /**
      * @var int
+     *
+     * @ORM\Column(name="score_visitor", type="integer", nullable=true)
      */
     private $scoreVisitor;
 
-    /**
-     * Constructor.
-     */
     public function __construct()
     {
         $this->scores = new \Doctrine\Common\Collections\ArrayCollection();

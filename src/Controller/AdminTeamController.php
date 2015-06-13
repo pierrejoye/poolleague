@@ -189,10 +189,10 @@ class AdminTeamController extends ControllerAbstract
     {
         $em = $this->app->container->get('doctrine.entitymanager');
         $teams = $em->getRepository('Pool\Entity\Team')->findAll();
+        $captains = [];
         if (!$teams) {
             $teams = [];
         } else {
-            $captains = [];
             foreach ($teams as $team) {
                 $captain = $team->getCaptain();
                 if ($captain) {

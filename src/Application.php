@@ -46,7 +46,7 @@ class Application extends Slim
         if (!isset($_SESSION['user'])) {
             return;
         };
-
+		$user = null;
         if (!isset($this->innerCache['user'])) {
             /* @var $userRepository UserRepository */
             $em = $this->container->get('doctrine.entitymanager');
