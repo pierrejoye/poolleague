@@ -138,7 +138,7 @@ class AdminTeamController extends ControllerAbstract
             $data = array_merge($data, $_SESSION['form-data']);
         }
 
-        $selectCaptain = $this->getCaptainList($id);
+        $selectCaptain = $this->getCaptainList();
         $data['mode'] = 'add';
         $data['selectCaptain'] = $selectCaptain;
         $this->app->render('admin/addTeam.html', $data);
