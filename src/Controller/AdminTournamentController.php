@@ -174,6 +174,7 @@ class AdminTournamentController extends ControllerAbstract
         $teamBye->setName('Bye');
         $teams[] = $teamBye;
         $teamFixture = [];
+
         foreach ($data as $round) {
             $toShow = [];
             foreach ($round as $match) {

@@ -192,4 +192,6 @@ $app->postSecured('/admin/league/:id/team/edit', 'Pool\Controller\AdminLeagueCon
 // Score
 $app->getSecured('/admin/score/:scoreId/edit', 'Pool\Controller\AdminScoreController:editFormShow');
 $app->postSecured('/admin/score/:scoreId/edit', 'Pool\Controller\AdminScoreController:editFormAction');
+
+
 $app->run();

@@ -2,7 +2,7 @@
 {% set title = 'BKK Pool League: Login' %}
 
 {% block content %}
-<a href="http://localhost/admin/league/{{league.getId()|escape}}/show">return to the list</a>
+<a href="/admin/tournament/{{tournament.getId()}}/show">return to the list</a>
 
 	<div class="row">
 		<div class="col-lg-12">
@@ -42,10 +42,10 @@
                                     {% else %}
                                         {{ game.getVisitor()|escape }}
                                     {% endif %}
-
-                                    ({{ game.getScoreHome()}}:{{ game.getScoreVisitor()}})
-
                                     {% if game.getVisitor()!='' and game.getVisitor()!='' %}
+                                        {% if game.getScoreHome()!='' and game.getScoreVisitor()!='' %}
+                                            ({{ game.getScoreHome() }}:{{ game.getScoreVisitor()}})
+                                        {% endif%}
                                         <a href="/admin/score/{{ game.getId() }}/edit">Edit scores</a>
                                     {% endif %}
                                  </li>
@@ -60,5 +60,5 @@
         </div>
 	</div>
 
-<a href="http://localhost/admin/league/{{league.getId()|escape}}/show">return to the list</a>
+<a href="/admin/tournament/{{tournament.getId()}}/show">return to the list</a>
 {% endblock %}
